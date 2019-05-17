@@ -3,8 +3,22 @@
     <!--添加车辆信息页面-->
     <div class="addCarContent">
       <div class="sel">
+        <div>是否有车牌</div>
+        <div class="line-input" style="text-align:right;">
+          <!-- <van-switch
+            :checked="isDefault"
+            size="24px"
+            @change="isDefault = !isDefault"
+            active-color="#ff6325"
+          /> -->
+          <input type="radio" :value="isCarNum" :checked="isCarNum" @click="onIsCarNum">
+        </div>
+      </div>
+      <div class="sel" v-if="isCarNum">
         <div>
-          <span class="zhi">*&nbsp;</span>车牌号码
+          <span class="zhi">*&nbsp;</span>
+          车牌号码
+          <!-- <span class="tss">无牌可不填</span>   -->
         </div>
         <div class="flex-container line-input">
           <div class="flex-container title">
@@ -102,6 +116,7 @@ export default {
   data() {
     return {
       isDefault: false,
+      isCarNum:true,
       eaditId: "",
       Id:"",
       selectType:"",
@@ -225,22 +240,24 @@ export default {
     },
     valOther() {
       //验证
-      let reg = new RegExp("[0-9A-Z]");
-      if (this.carNum == "") {
-        wx.showToast({
-          title: "请输入车牌号!",
-          icon: "none",
-          duration: 2000
-        });
-        return false;
-      }
-      if (!reg.test(this.carNum)) {
-        wx.showToast({
-          title: "请输正确的车牌号格式!",
-          icon: "none",
-          duration: 2000
-        });
-        return false;
+      if(this.isCarNum){
+        let reg = new RegExp("[0-9A-Z]");
+        if (this.carNum == "") {
+          wx.showToast({
+            title: "请输入车牌号!",
+            icon: "none",
+            duration: 2000
+          });
+          return false;
+        }
+        if (!reg.test(this.carNum)) {
+          wx.showToast({
+            title: "请输正确的车牌号格式!",
+            icon: "none",
+            duration: 2000
+          });
+          return false;
+        }
       }
       if (this.carBrand == "") {
         wx.showToast({
@@ -293,12 +310,17 @@ export default {
       } else {
         type = 0;
       }
+      let CarMumber = ''
+      if(this.carNum){
+        console.log(this.carNum,'carNum')
+        CarMumber = this.city + this.num + this.carNum
+      }
       let res = await post("User/EditCarInfo", {
         UserId: this.userId,
         Token: this.token,
         CarInfo: {
           Id: this.eaditId,
-          CarMumber: this.city + this.num + this.carNum,
+          CarMumber: CarMumber,
           CarBrand: this.carBrand,
           CarType: this.carSize,
           CarColor: this.carColor,
@@ -328,11 +350,15 @@ export default {
       } else {
         type = 0;
       }
+      let CarMumber=''
+      if(this.carNum){
+        CarMumber = this.city + this.num + this.carNum
+      }
       const params = {
         UserId: this.userId,
         Token: this.token,
         CarInfo: {
-          CarMumber: this.city + this.num + this.carNum,
+          CarMumber:CarMumber,
           CarBrand: this.carBrand,
           CarType: this.carSize,
           CarColor: this.carColor,
@@ -367,6 +393,10 @@ export default {
       }
       this.isShow = false;
     },
+    onIsCarNum(){
+      console.log(this.isCarNum)
+      this.isCarNum = !this.isCarNum
+    }
   },
   created() {}
 };
@@ -379,4 +409,9 @@ export default {
 }
 @import "./style";
 @import "../../css/common.css";
+.tss{
+  color:#aaa;
+  font-size:20rpx;
+  width:100%!important;
+}
 </style>

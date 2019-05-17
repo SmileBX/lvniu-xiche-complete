@@ -13,8 +13,8 @@
                           <img src="/static/images/car3.png" class="car">
                       </div>
                       <div class="flex-container coml">
-                        <p class="brand">品牌: {{item.CarBrand}}-{{item.CarType}}</p>
-                        <p class="carnum">车牌: {{item.CarMumber}}</p>
+                        <p class="brand">品牌: {{item.CarBrand}}{{item.CarType?'-':''}}{{item.CarType}}</p>
+                        <p class="carnum">车牌: {{item.CarMumber?item.CarMumber:'无'}}</p>
                       </div>
                     </div>
                     <div class="flex-container choosemenu">
