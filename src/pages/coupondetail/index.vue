@@ -52,11 +52,11 @@
             <div class="couponmenu">
               <div class="flex-container" v-if="coupon[0]">
                 <text class="itemname">优惠券</text>
-                <p class="couponmenuinfo">
-                  <img src="/static/images/deatailbg.png" class="couponbg">
+                <!-- <p class="couponmenuinfo"> -->
+                  <!-- <img src="/static/images/deatailbg.png" class="couponbg"> -->
                   <!-- <text>满{{coupon[0].meetConditions}}减{{coupon[0].price}}</text> -->
                   <text>{{coupon[0].Name}}</text>
-                </p>
+                <!-- </p> -->
               </div>
               <div class="flex-container couptsild">
                 <text class="itemname">积分</text>
