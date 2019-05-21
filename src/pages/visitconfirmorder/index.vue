@@ -24,6 +24,20 @@
             <p>￥{{orderinfo.Price}}</p>
           </div>
         </div>
+        <!-- 上门订单 -->
+        <div class="flex-container infoslide white pad" @click="selectItem">
+          <div>增加服务项目</div>
+          <div>
+            <img src="/static/images/back.png" class="right"/>
+          </div>
+        </div>
+        <div class="flex-container infoslide white pad" @click="choseItem(1)">
+          <div>上门服务地点</div>
+          <div>
+            <img src="/static/images/back.png" class="right"/>
+          </div>
+        </div>
+
         <div class="flex-container infoslide white pad" @click="choseItem(1)">
           <div>服务车辆</div>
           <div>
@@ -48,10 +62,34 @@
             <img src="/static/images/back.png" class="right" v-else>
           </div>
         </div>
+        
+        <!-- 上门订单 -->
+        <div class="flex-container infoslide white pad inputbor" @click="choseItem(5)">
+          <div>联系人</div>
+          <input type="text" placeholder="填写联系人" class="inputmes" v-model="Remarks">
+        </div>
+        <div class="flex-container infoslide white pad inputbor" @click="choseItem(5)">
+          <div>联系电话</div>
+          <input type="text" placeholder="填写联系电话" class="inputmes" v-model="Remarks">
+        </div>
+        <div class="flex-container infoslide white pad" @click="choseItem(5)">
+          <div>添加现场照片</div>
+          <div>
+            <span v-if="CardTicketName">{{CardTicketName}}</span>
+            <img src="/static/images/back.png" class="right" v-else>
+          </div>
+        </div>
+        <div class="infoslide inputbor flex-container white pad">
+          <div>备注信息</div>
+          <input type="text" placeholder="填写备注信息" class="inputmes" v-model="Remarks">
+        </div>
+
+
         <div class="infoslide inputbor flex-container white pad">
           <div>买家留言</div>
           <input type="text" placeholder="填写内容已和卖家协商确认" class="inputmes" v-model="Remarks">
         </div>
+
         <div class="infoslide slideprice white pad">
           合计：
           <span>￥{{totalPrice}}</span>
@@ -360,93 +398,14 @@ export default {
         });
         return false;
       }
+    },
+    // 上门选择服务项目
+    selectItem(){
+      //  + this.shopId
+      wx.navigateTo({
+        url:'/pages/servince/main?shopId=DECACB358531C437'
+      })
     }
-    // payMoney(){
-    //     //判断哪种支付方法
-    //     for(let i=0;i<this.payitems.length;i++){
-    //       if(this.payitems[i].checked){
-    //         console.log(i)
-    //         if(i==0){
-    //           this.wxPay()
-    //         }else{
-    //           this.otherPay()
-    //         }
-    //       }
-    //     }
-    // },
-    // async wxPay(){
-    //   var res=await post("/Order/ConfirmWeiXinSmallPay",{
-    //        UserId:this.UserId,
-    //        Token:this.Token,
-    //       OrderNo:this.orderNumber
-    //     })
-    //     if(res.code==0){
-    //         let payData=JSON.parse(res.data.JsParam);
-    //         wx.requestPayment({
-    //         timeStamp: payData.timeStamp,
-    //         nonceStr: payData.nonceStr,
-    //         package: payData.package,
-    //         signType: payData.signType,
-    //         paySign: payData.paySign,
-    //         success(res) {
-    //           wx.navigateTo({
-    //             url:"/pages/visitconfirmorder/main"
-    //           });
-    //         },
-    //         fail(res) {
-
-    //         }
-    //       })
-    //    }
-    // },
-    // async otherPay(){
-    //   console.log(this.password,"支付密码")
-    //   var res=await post("/Order/PaymentOrder",{
-    //        UserId:this.UserId,
-    //       Token:this.Token,
-    //       Password:this.password, //会员支付密码
-    //       OrderNo:this.orderNumber
-    //     })
-    //     console.log(res,"余额支付")
-    //     if(res.code==0){
-    //       //余额支付成功
-
-    //     }
-    // },
-    // async getOrderParam(){  //获取订单支付金额及支付剩余时间
-    //     if(this.OrderNo){
-    //         var result=await post("/Order/GetOrderParam",{
-    //           UserId:this.UserId,
-    //           Token:this.Token,
-    //           OrderNo:this.OrderNo
-    //         })
-    //         console.log(result,"获取订单金额 剩余支付时间")
-    //         if(result.code==0){
-    //           this.orderParmar=result.data
-    //           this.minute=result.data.ExpireTime
-    //       }
-    //     }
-    // },
-    //定时器支付时间变化
-    // changeTime(){
-    //   this.timer=setInterval(
-    //     ()=>{
-    //     if(this.second==='00'){
-    //       this.second=59
-    //       this.minute--
-    //     }
-    //     this.second--
-    //     if(!this.second.toString()[1]){
-    //       this.second=`0${this.second}`
-    //     }
-    //     if(!this.minute.toString()[1]){
-    //       this.minute=`0${this.minute}`
-    //     }
-    //     if(this.minute==="00"){
-    //       clearInterval(this.timer)
-    //     }
-    //   },2000)
-    // },
   },
 
   created() {

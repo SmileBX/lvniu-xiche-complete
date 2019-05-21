@@ -6,8 +6,8 @@
         <div
           v-for="(item,index) in menulist"
           :key="index"
-          :class="{'active':activeId==item.id}"
-          @click="getClassifyLisit(item.id,item.BrandList)"
+          :class="{'active':activeClassifyId==item.id}"
+          @click="activeClassify(item.id)"
           class="nemeitem"
         >
           <text class="title">{{item.name}}</text>
@@ -15,42 +15,47 @@
       </scroll-view>
     </div>
     <!--右列表-->
-    <div class="list">
-      <div class="flex-container intitem" v-for="(item,index) in productlist" :key="item.id">
-        <div class="flex-container cartdetal">
-          <div>
-            <img
-              :src="item.img"
-              class="carpic"
-              v-if="ispop"
-              @click="goDetail(item.brandId,item.id)"
-            >
-            <!-- <img src="/static/images/comblo.png" class="carpic" v-else-if="comb"  @click="goDetail(2)">
-            <img src="/static/images/cardshop.png" class="carpic" v-else  @click="goDetail(2)">-->
-          </div>
-          <div class="flex-container citeminfo">
-            <p class="itemtitle" @click="goDetail(item.brandId,item.id)">{{item.title}}</p>
-            <!-- <p class="progress" @click="goDetail(item.brandId,item.id)" 
-            v-if="item.brandId!=21">
-              <text v-for="(tab,tabIndex) in item.tab" :key="tabIndex">{{tab}}</text>
-            </p> -->
-            <!-- <p class="sales" v-if="item.brandId!=21&&item.brandId!=24" @click="goDetail(item.brandId,item.id)">销量{{item.sale}}</p> -->
-            <!-- <p class="sales" v-if="item.brandId==24" @click="goDetail(item.brandId,item.id)">销量{{item.sale}}</p> -->
-              <!-- 店铺名称 -->
-            <!-- <p class="sales" v-if="item.brandId==21" @click="goDetail(item.brandId,item.id)">{{item.shopName}}</p> -->
-            <p class="sales" @click="goDetail(item.brandId,item.id)">{{item.shopName}}</p>
-              <!-- 距离 -->
-            <!-- <p class="sales" v-if="item.brandId==21" @click="goDetail(item.brandId,item.id)">距离：{{item.Distance}}km</p> -->
-            <p class="sales" v-if="item.brandId!=24" @click="goDetail(item.brandId,item.id)">距离：{{item.Distance}}km</p>
-            <div class="flex-container around">
-              <p class="price">￥{{item.price}}</p>
-              <!-- <div v-show="item.isAttr"> -->
-              <div v-show="item.isAttr&&item.brandId!=24">
-                <img src="/static/images/s1.png" @click="lessNumber(index)" class="tippic">
-                <text class="nums">{{item.num}}</text>
-                <img src="/static/images/addcart.png" @click="addNumber(index)" class="tippic">
+    <scroll-view scroll-y class="list" :scroll-into-view="'item'+activeClassifyId" scroll-with-animation>
+      
+      <div class="listBox" :id="'item'+product.classifyId" v-for="(product,productIndex) in productlist" :key="productIndex">
+        <div class="list_title">{{product.classifyName}}</div>
+        <div class="null" v-if="product.list.length<1"></div>
+        <div class="flex-container intitem" v-for="(item,index) in product.list"  :key="item.id">
+          <div class="flex-container cartdetal">
+            <div>
+              <img
+                :src="item.img"
+                class="carpic"
+                v-if="ispop"
+                @click="goDetail(item.brandId,item.id)"
+              >
+              <!-- <img src="/static/images/comblo.png" class="carpic" v-else-if="comb"  @click="goDetail(2)">
+              <img src="/static/images/cardshop.png" class="carpic" v-else  @click="goDetail(2)">-->
+            </div>
+            <div class="flex-container citeminfo">
+              <p class="itemtitle" @click="goDetail(item.brandId,item.id)">{{item.title}}</p>
+              <!-- <p class="progress" @click="goDetail(item.brandId,item.id)" 
+              v-if="item.brandId!=21">
+                <text v-for="(tab,tabIndex) in item.tab" :key="tabIndex">{{tab}}</text>
+              </p> -->
+              <!-- <p class="sales" v-if="item.brandId!=21&&item.brandId!=24" @click="goDetail(item.brandId,item.id)">销量{{item.sale}}</p> -->
+              <!-- <p class="sales" v-if="item.brandId==24" @click="goDetail(item.brandId,item.id)">销量{{item.sale}}</p> -->
+                <!-- 店铺名称 -->
+              <!-- <p class="sales" v-if="item.brandId==21" @click="goDetail(item.brandId,item.id)">{{item.shopName}}</p> -->
+              <p class="sales" @click="goDetail(item.brandId,item.id)">{{item.shopName}}</p>
+                <!-- 距离 -->
+              <!-- <p class="sales" v-if="item.brandId==21" @click="goDetail(item.brandId,item.id)">距离：{{item.Distance}}km</p> -->
+              <p class="sales" v-if="item.brandId!=24" @click="goDetail(item.brandId,item.id)">距离：{{item.Distance}}km</p>
+              <div class="flex-container around">
+                <p class="price">￥{{item.price}}</p>
+                <!-- <div v-show="item.isAttr"> -->
+                <div v-show="item.isAttr&&item.brandId!=24">
+                  <img src="/static/images/s1.png" @click="lessNumber(index)" class="tippic">
+                  <text class="nums">{{item.num}}</text>
+                  <img src="/static/images/addcart.png" @click="addNumber(index)" class="tippic">
+                </div>
+                <div class="pay" v-show="item.brandId==24" @click="goDetail(24,item.id)">立即购买</div>
               </div>
-              <div class="pay" v-show="item.brandId==24" @click="goDetail(24,item.id)">立即购买</div>
             </div>
           </div>
         </div>
@@ -61,7 +66,8 @@
         v-if="isOved"
         style="text-align:center;padding:20rpx;font-size:26rpx;color:#666;"
       >没有数据了哦！</p>
-    </div>
+    </scroll-view>
+
     <!--底部按钮-->
     <div class="btn">
       <div class="btninfo">
@@ -105,11 +111,12 @@ export default {
       userId: "",
       token: "",
       page: 1,
-      pageSize: 12,
+      pageSize: 30,
       isOved: false,
       notData: false,
       latitude:0,
       longitude:0,
+      activeClassifyId:'a', //活动的分类id
     };
   },
   watch: {
@@ -166,6 +173,9 @@ export default {
       post("Server/GetShopCardSort", { BrandList: 0 }).then(res => {
         this.menulist = [];
         for (let i = 0; i < res.data.length; i += 1) {
+          if(i===0&&res.data[0]){
+            this.activeClassifyId = res.data[0].Id
+          }
           const datas = res.data[i];
           that.menulist.push({
             id: datas.Id,
@@ -173,55 +183,30 @@ export default {
             BrandList:datas.BrandList
           });
         }
+        this.getClassifyLisit()
         // 获取第一个分类产品
-        that.getClassifyLisit(that.menulist[0].id,that.menulist[0].BrandList);
+        // that.getClassifyLisit(that.menulist[0].id,that.menulist[0].BrandList);
       });
     },
     // 分类产品列表 type分类类型 // 镀晶产品--24
     async getClassifyLisit(id,type) {
       const that = this;
-      if (id) {
-        that.activeId = id;
-        this.page = 1;
-      }
-      let res = null;
-        if(type==24){
-         res = await post("Server/VipProductList")
-              that.productlist = [];
-         for (let i = 0; i < res.data.length; i += 1) {
-              const datas = res.data[i];
-              that.productlist.push({
-                brandId: datas.BrandId||24, //商品分类0--全部分类，21--商品，22--套餐，23--卡券
-                id: datas.Id,
-                title: datas.Name,
-                price: datas.Price,
-                img: datas.PicNo,
-                tab: datas.KeywordName ? JSON.parse(datas.KeywordName) : [],
-                // isAttr:datas.SpecificationValue&&datas.BrandId===21
-              });
-         }
-      console.log('res',this.productlist)
-        }else{
+      this.productlist =[]
+          console.log(this.activeClassifyId,'activeClassifyId')
+      this.menulist.map(async (item)=>{
+        
           const params = {
             page: this.page,
             pageSize: this.pageSize,
-            TypeId: id || that.activeId,
+            TypeId: item.id,
             Lat: this.latitude,
             Lng: this.longitude
           };
-          res = await post("Goods/GoodsList", params)
-            if (this.page === 1) {
-              that.productlist = [];
-            }
-            if (res.data.length !== this.pageSize && this.page === 1) {
-              this.notData = true;
-            }
-            if (res.data.length !== this.pageSize && this.page > 1) {
-              this.isOved = true;
-            }
+         let res = await post("Goods/GoodsList", params)
+         let list =[]
             for (let i = 0; i < res.data.length; i += 1) {
               const datas = res.data[i];
-              that.productlist.push({
+              list.push({
                 brandId: datas.BrandId, //商品分类0--全部分类，21--商品，22--套餐，23--卡券
                 id: datas.Id,
                 title: datas.Name,
@@ -237,8 +222,18 @@ export default {
                 isAttr: datas.SpecificationValue
               });
             }
-            that.getCarData();
-        }
+            that.productlist.push({
+                classifyId:item.id,
+                classifyName:item.name,
+                list
+            })
+      })
+      this.getCarData();
+            
+    },
+    // 活动分类
+    activeClassify(id){
+            this.activeClassifyId = id
     },
     // 删除购物车
     async lessNumber(index) {

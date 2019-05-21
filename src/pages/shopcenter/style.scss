@@ -1,3 +1,4 @@
+
 .active{
     background: #fff;
     color:#ff6325
@@ -14,9 +15,9 @@
     width:180rpx;
     height:100vh;
     // height:100rpx;
-    position:fixed;
-    left:0;
-    top:0;
+    // position:fixed;
+    // left:0;
+    // top:0;
     &
     ::-webkit-scrollbar{
         width: 0;
@@ -44,8 +45,18 @@
     display:inline-block
 }
 .list{
-    width:100%;
-    padding:0 20rpx 90rpx 200rpx;
+    width:570rpx;
+    height:100vh;
+    box-sizing:border-box;
+    padding:20rpx 20rpx;
+    .list_title{
+        line-height:60rpx;
+        font-size:33rpx;
+        font-weight:600;
+    }
+    .null{
+        height:100rpx;
+    }
 }
 .itemtitle,.price{
     font-weight:bold;
@@ -75,9 +86,12 @@
 .sales{
     color:#b3b3b3;
 }
-.intitem:not(:first-child){
-    margin-top:60rpx;
+.intitem{
+    margin-bottom:60rpx;
 }
+// .intitem:not(:first-child){
+//     margin-top:60rpx;
+// }
 .btn{
     position:fixed;
     bottom:0;

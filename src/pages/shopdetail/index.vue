@@ -122,31 +122,6 @@ import "../../css/common.css";
 import "../../css/global.css";
 
 export default {
-  onLoad() {
-    this.setBarTitle();
-    this.shopid = this.$root.$mp.query.shopid;
-    console.log(this.shopid, "详情页接收");
-    this.lat = wx.getStorageSync("latitude");
-    this.lng = wx.getStorageSync("longitude");
-  },
-  onShow() {
-    this.Token = wx.getStorageSync("token");
-    this.UserId = wx.getStorageSync("userId");
-    this.servincelist = [];
-    this.meallist = [];
-    this.commonlist = [];
-    this.detailinfo = [];
-    this.sershow = true;
-    this.dishshow = false;
-    this.pointshow = false;
-    this.isOved = false;
-    this.Page = "1";
-    this.typeid = 0;
-    this.activecolor = "0";
-    this.active = "服务";
-    this.getShopDetail();
-    console.log(this.typeid, "page服务类型id");
-  },
   data() {
     return {
       shopLat: "", //商铺经纬度 用于服务详情导航
@@ -194,6 +169,31 @@ export default {
     shopChild,
     pointChildpic
   },
+  onLoad() {
+    this.setBarTitle();
+    this.shopid = this.$root.$mp.query.shopid;
+    console.log(this.shopid, "详情页接收");
+    this.lat = wx.getStorageSync("latitude");
+    this.lng = wx.getStorageSync("longitude");
+  },
+  onShow() {
+    this.Token = wx.getStorageSync("token");
+    this.UserId = wx.getStorageSync("userId");
+    this.servincelist = [];
+    this.meallist = [];
+    this.commonlist = [];
+    this.detailinfo = [];
+    this.sershow = true;
+    this.dishshow = false;
+    this.pointshow = false;
+    this.isOved = false;
+    this.Page = "1";
+    this.typeid = 0;
+    this.activecolor = "0";
+    this.active = "服务";
+    this.getShopDetail();
+    console.log(this.typeid, "page服务类型id");
+  },
   methods: {
     async getShopDetail() {
       //商户详情
@@ -215,8 +215,8 @@ export default {
       }
       //console.log(this.detailinfo,"商家详情")
     },
+      //服务项目分类菜单
     async getBarlist() {
-      //服务菜单
       var res = await post("Server/GetServerType", {});
       if (res.code == 0) {
         this.barlist = res.data;
@@ -225,7 +225,7 @@ export default {
       }
       this.showItem();
     },
-      //服务列表
+      //服务项目列表
     async showItem() {
       // wx.request({
       //   url: "https://carapi.wtvxin.com/api/Server/ServiceProducts",
