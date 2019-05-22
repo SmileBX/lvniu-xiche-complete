@@ -570,15 +570,17 @@ export default {
       wx.navigateTo({ url: "/pages/locationorder/main" });
     },
     washCar() {
-      console.log(this.shopInfo);
+      console.log('shopInfo',this.shopInfo);
       if (!this.shopInfo.id) {
         this.isshow = true;
         this.showShop = true;
         return false;
       }
-      wx.setStorageSync("shopInfo", this.shopInfo);
-      console.log(this.shopInfo, this.shopId, "跳转我要洗车");
-      wx.navigateTo({ url: "/pages/location/main?shopId=" + this.shopId });
+      // wx.setStorageSync("shopInfo", this.shopInfo);
+      // console.log(this.shopInfo, this.shopId, "跳转我要洗车");
+      // wx.navigateTo({ url: "/pages/location/main?shopId=" + this.shopId });
+      this.toShopdet(this.shopInfo.id,1)
+      
     },
     goTo(e) {
       if (e == 1) {
@@ -588,8 +590,9 @@ export default {
         wx.navigateTo({ url: "/pages/shoplist/main" });
       }
     },
-    toShopdet(e) {
-      wx.navigateTo({ url: "/pages/shopdetail/main?shopid=" + e });
+    // 跳转商户详情，isVisit--1，上门；2，到店
+    toShopdet(shopId,type) {
+      wx.navigateTo({ url: `/pages/shopdetail/main?shopid=${shopId}&&isVisit=${type||2}`});
     },
     //打开导航app功能
     getMap() {

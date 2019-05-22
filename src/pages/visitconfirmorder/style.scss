@@ -1,131 +1,312 @@
-.ordershophead{
-    align-items: flex-start;
-    padding:0 30rpx;
-}
-.orderserve{
-    padding-left:20rpx;
-    border-left:4rpx solid #ff6325;
-    margin-bottom:20rpx;
-}
-.ordermain{
-    width:100%;
-}
-.placename{
-    font-weight: bold;
-}
-.orderplace{
-    align-items: flex-start;
-    width:80%;
-}
-.ordershopimg{
-    width:120rpx;
-    height:120rpx;
-}
-.ordertips{
-    color:#e3d1bc;
-    font-size:24rpx;
-    margin-top:20rpx;
-}
-.protitle{
-    font-weight: bold;
-    font-size:30rpx;
-    padding:20rpx 0;
-}
-.proinfo{
-    padding:20rpx 30rpx;
+.ordershophead {
+  align-items: flex-start;
+  padding: 0 30rpx;
 }
 
-.infoslide{
-    padding:20rpx 0;
-    border-bottom: 1rpx solid #eee;
+.orderserve {
+  padding-left: 20rpx;
+  border-left: 4rpx solid #ff6325;
+  margin-bottom: 20rpx;
 }
-.inputmes{
-    width:80%;
-    padding-left:20rpx;
-    border:0;
-    outline: none;
+
+.ordermain {
+  width: 100%;
 }
-.slideprice{
+
+.placename {
+  font-weight: bold;
+}
+
+.orderplace {
+  align-items: flex-start;
+  width: 80%;
+}
+
+.ordershopimg {
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.ordertips {
+  color: #e3d1bc;
+  font-size: 24rpx;
+  margin-top: 20rpx;
+}
+
+.protitle {
+  font-weight: bold;
+  font-size: 30rpx;
+  padding: 20rpx 0;
+}
+
+.proinfo {
+  padding: 20rpx 30rpx;
+}
+
+.infoslide {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.inputmes {
+  width: 80%;
+  padding-left: 20rpx;
+  border: 0;
+  outline: none;
+}
+
+.slideprice {
+  text-align: right;
+  color: #999;
+}
+
+.slideprice span {
+  color: #ff6666;
+}
+
+.botbtn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 86rpx;
+}
+
+.price {
+  width: 70%;
+  text-align: right;
+  line-height: 86rpx;
+  border: 1rpx solid #eee;
+  padding-right: 40rpx;
+}
+
+.price span {
+  color: #ffb8b8;
+}
+
+.btnconfir {
+  width: 30%;
+  color: #fff;
+  background: #ff6325;
+  line-height: 86rpx;
+  text-align: center;
+}
+
+.lasttime {
+  border-bottom: 1rpx solid #f4f4f4;
+  text-align: center;
+  padding: 40rpx 20rpx;
+  font-weight: bold;
+  font-size: 30rpx;
+}
+
+.lasttime span {
+  background: #f5f5f5;
+}
+
+.strong {
+  font-weight: bold
+}
+
+.shouldpay {
+  color: #ff6325
+}
+
+.itempay {
+  font-weight: bold;
+  border-bottom: 1rpx solid #f4f4f4;
+}
+
+.payimg {
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.payitem {
+  border-bottom: 1rpx solid #f4f4f4;
+}
+
+.pad {
+  padding: 20rpx 0;
+  background: #fff;
+}
+
+.detailright {
+  margin-bottom: 20rpx
+}
+
+.btncharge {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 89rpx;
+  background: #ff6325;
+  color: #fff;
+  text-align: center;
+  line-height: 89rpx;
+}
+
+.inputbor {
+  input {
     text-align: right;
-    color:#999;
-}
-.slideprice span{
-    color:#ff6666;
+  }
 }
 
-.botbtn{
-    position:fixed;
-    bottom:0;
-    left:0;
+.mask{
+  height:100vh;
+  width:100%;
+  background:rgba(0,0,0,.5);
+}
+// 选择时间********************************  
+.selectTime {
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  z-index:999;
+  .shopbg {
+    width: 750rpx;
+    height: 500rpx;
+  }
+
+  .bg-cart {
+    width: 750rpx;
+    height: 520rpx;
+    overflow: hidden;
+  }
+
+  .pic-center {
+    top: 300rpx !important;
+  }
+
+  .appoint {
+    font-size: 32rpx;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .timeflex {
     display: flex;
     justify-content: space-between;
-    width:100%;
-    height:86rpx;
-}
-.price{
-    width:70%;
-    text-align:right;
-    line-height:86rpx;
-    border:1rpx solid #eee;
-    padding-right:40rpx;
-}
-.price span{
-    color:#ffb8b8;
-}
-.btnconfir{
-    width:30%;
-    color:#fff;
+    align-items: center;
+    padding: 15rpx;
+    font-size: 22rpx;
+    color: #999;
+    border-bottom: 1rpx solid #eee;
+  }
+
+  .active {
     background: #ff6325;
-    line-height:86rpx;
-    text-align:center;
-}
-.lasttime{
-    border-bottom:1rpx solid #f4f4f4;
+    color: #fff;
+    padding: 8rpx 25rpx;
+    border-radius: 25rpx;
+  }
+
+  .tagflex {
+    display: flex;
+    justify-content: space-between;
+    color: #999;
+    font-size: 28rpx;
+  }
+
+  .tagflex div {
+    width: 50%;
+    box-sizing: border-box;
+    padding: 25rpx 0;
     text-align: center;
-    padding:40rpx 20rpx;
-    font-weight:bold;
-    font-size:30rpx;
-}
-.lasttime span{
-    background: #f5f5f5;
-}
-.strong{
-    font-weight: bold
-}
-.shouldpay{
-    color:#ff6325
-}
-.itempay{
-    font-weight: bold;
-    border-bottom: 1rpx solid #f4f4f4;
+  }
+
+  .choosetime {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 30rpx;
+  }
+
+  .chooseitem {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    width: 25%;
+    text-align: center;
+    font-size: 28rpx;
+    color: #999;
+  }
+
+  .chooseitem div {
+    padding: 15rpx;
+  }
+
+  .itemshow {
+    border-bottom: 1rpx solid #eee;
+    border-top: 1rpx solid #eee;
+    box-sizing: border-box;
+    color: #1e1e1e
+  }
+
+  .btn-cancle {
+    border: 1px solid #eee;
+    box-sizing: border-box;
+    font-size: 32rpx;
+    color: #1e1e1e
+  }
+
+  .btn-order {
+    background: #ff6325;
+    color: #fff;
+    font-size: 32rpx;
+  }
+
+  .bottomstyle {
+    width: 100%;
+    background: #fff;
+  }
+
+  .freeRoom {
+    height:300rpx;
+    .timeText {
+      text-align: center;
+    }
+
+    .pickerView {
+      width: 100%;
+      height: 300rpx;
+
+      .pickerColumn {
+        .pickerItem {
+          line-height: 68rpx;
+          height: 34rpx;
+          overflow: hidden;
+          text-align: center;
+        }
+      }
+    }
+  }
 }
 
-.payimg{
-    width:56rpx;
-    height:56rpx;
+// 选择时间结束********************************  
+.ml-20{
+  margin-left:-30rpx;
+
 }
-.payitem{
-    border-bottom:1rpx solid #f4f4f4;
+.bt-eee{
+  border-top:1rpx solid #eee;
 }
-.pad{
-    padding:20rpx 0;
+.textarea{
+  padding-bottom:20rpx;
 }
-.detailright{
-    margin-bottom:20rpx
-}
-.btncharge{
-    width:100%;
-    position: fixed;
-    bottom:0;
-    left:0;
-    height:89rpx;
-    background: #ff6325;
-    color:#fff;
-    text-align: center;
-    line-height: 89rpx;
-}
-.inputbor{
-    input{
-        text-align:right;
-    }
+.infobg{
+  height:268rpx;
+  width:690rpx;
+  line-height:35rpx;
+  font-size:28rpx;
+  background:#f4f7fc;
+  color:#333;
+  border-radius:10rpx;
+  padding:20rpx;
+  box-sizing: border-box
 }

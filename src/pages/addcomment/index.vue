@@ -5,15 +5,15 @@
       <!--预约上门订单-->
       <div class="border">
         <div class="flex-container head white">
-          <img :src="info.order.ArtificerPic" class="avatar" v-if="info.order.ArtificerPic">
+          <img :src="info.order.ShopLogo" class="avatar" v-if="info.order.ArtificerPic">
           <img src="/static/images/default.png" class="avatar" v-else>
           <div>
-            <p class="person">服务技师：{{info.order.Artificer}}</p>
+            <p class="person">店铺名称：{{info.order.ShopName}}</p>
             <p class="time">服务时间：{{info.order.Fahuodate}}</p>
           </div>
         </div>  
         <div class="white flex-container mark">
-          <p>服务打分</p>
+          <p>评分</p>
             <p>
             <span v-for="(item,index) in starChecked" :key="index" @click="shiftStar(index)">
               <img v-if="item" src="/static/images/xing.png" class="xing-point">
@@ -65,7 +65,7 @@
     <!--图片展示-->
     <div class="comment white">
       <textarea  class="commentdet" v-model="contentText"
-        placeholder="亲，您对技师的服务表现还满意吗？给其他想做服务的 小伙伴做个参考呗~期待给您更好的服务……"
+        placeholder="亲，您对产品、技师和客服的服务表现还满意吗？给其他想做服务的 小伙伴做个参考呗~期待给您更好的服务……"
       ></textarea>
       <div class="imgs">
         <div class="imgItem" v-for="(img,index) in imgPathArr" :key="index">

@@ -31,7 +31,7 @@
           </div>
           <div class="price">
             <div>￥{{detailinfo.Price || 0}}</div>
-            <!-- <div>VIP ￥{{detailinfo.VipPrice}}</div> -->
+            <div class="vipPrice">VIP ￥{{detailinfo.VipPrice}}</div>
             </div>
       </div>
       <div class="hr"></div>
@@ -123,7 +123,7 @@
       </div>
       <div class="slide"></div>
       <!--购买须知-->
-      <div class="point pointnow" style="margin-bottom:100rpx;">
+      <div class="point" style="margin-bottom:100rpx;">
           <div class="main">购买需知</div>
           <div v-html="detailinfo.ContentDetail">
 

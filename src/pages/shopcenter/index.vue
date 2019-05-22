@@ -49,12 +49,12 @@
               <div class="flex-container around">
                 <p class="price">￥{{item.price}}</p>
                 <!-- <div v-show="item.isAttr"> -->
-                <div v-show="item.isAttr&&item.brandId!=24">
+                <div v-if="item.ServiceMode!=1">
                   <img src="/static/images/s1.png" @click="lessNumber(index)" class="tippic">
                   <text class="nums">{{item.num}}</text>
                   <img src="/static/images/addcart.png" @click="addNumber(index)" class="tippic">
                 </div>
-                <div class="pay" v-show="item.brandId==24" @click="goDetail(24,item.id)">立即购买</div>
+                <div class="pay" v-else @click="goDetail(item.brandId,item.id)">立即购买</div>
               </div>
             </div>
           </div>
@@ -215,6 +215,7 @@ export default {
                 sale: datas.SalesVolume,
                 shopName:datas.ShopName,
                 Distance:datas.Distance.toFixed(2),
+                ServiceMode:datas.ServiceMode, //是否上门产品
                 num: 0,
                 stock: datas.Stock,
                 tab: datas.KeywordName ? JSON.parse(datas.KeywordName) : [],
@@ -377,6 +378,10 @@ export default {
       console.log(type, "type-id", id);
       // wx.navigateTo({ url: "/pages/detail/main?id=" + id });
       // return false;
+            this.$store.commit('update',{
+              latitude: this.latitude,
+              longitude: this.longitude
+            });
       var a = type * 1;
       if (a === 21) {
         wx.navigateTo({ url: "/pages/serdetail/main?proid=" + id });
@@ -384,9 +389,9 @@ export default {
       if (a === 22 || a === 23) {
         wx.navigateTo({ url: "/pages/coupondetail/main?id=" + id });
       }
-      if (a === 24) {
-        wx.navigateTo({ url: "/pages/djdetail/main?id=" + id });
-      }
+      // if (a === 24) {
+      //   wx.navigateTo({ url: "/pages/djdetail/main?id=" + id });
+      // }
     },
     toPAy() {
       wx.navigateTo({ url: "/pages/confirmorder/main" });

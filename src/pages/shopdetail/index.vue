@@ -41,7 +41,7 @@
                 </p>
               </div>
             </div>
-            <div class="pay" @click="choseItem(item.Id)">支付</div>
+            <div class="pay" @click="choseItem(item.Id)">立即购买</div>
           </div>
         </div>
       </div>
@@ -161,7 +161,8 @@ export default {
       sershow: true,
       dishshow: false,
       pointshow: false,
-      isOved: false
+      isOved: false,
+      isVisit:0, //是否到店还是上门2--到店;1--上门0--展示全部
     };
   },
 
@@ -172,13 +173,17 @@ export default {
   onLoad() {
     this.setBarTitle();
     this.shopid = this.$root.$mp.query.shopid;
-    console.log(this.shopid, "详情页接收");
-    this.lat = wx.getStorageSync("latitude");
-    this.lng = wx.getStorageSync("longitude");
+    // isVisit 2--到店;1--上门;0--展示全部
+    if(this.$root.$mp.query.isVisit){
+      this.isVisit = this.$root.$mp.query.isVisit||0;
+    }
+    console.log(this.shopid,this.isVisit ,"详情页接收");
   },
   onShow() {
     this.Token = wx.getStorageSync("token");
     this.UserId = wx.getStorageSync("userId");
+    this.lat = this.$store.state.latitude;
+    this.lng = this.$store.state.longitude;
     this.servincelist = [];
     this.meallist = [];
     this.commonlist = [];

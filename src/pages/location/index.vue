@@ -99,10 +99,10 @@
           >{{item}}</div>
         </div>
         <!--开始时间 结束时间-->
-        <div class="tagflex">
-          <div>开始时间</div>
-          <div>结束时间</div>
-        </div>
+        <!-- <div class="tagflex"> -->
+          <!-- <div>开始时间</div> -->
+          <!-- <div>结束时间</div> -->
+        <!-- </div> -->
         <!--滑动选择时间-->
         <div class="freeRoom">
           <div>
@@ -114,12 +114,12 @@
               <picker-view-column class="pickerColumn">
                 <div class="pickerItem" v-for="(item,key) in minutes" :key="key">{{item}}分</div>
               </picker-view-column>
-              <picker-view-column class="pickerColumn">
+              <!-- <picker-view-column class="pickerColumn">
                 <div class="pickerItem" v-for="(item,key) in hourses" :key="key">{{item}}点</div>
               </picker-view-column>
               <picker-view-column class="pickerColumn">
                 <div class="pickerItem" v-for="(item,key) in minutes" :key="key">{{item}}分</div>
-              </picker-view-column>
+              </picker-view-column> -->
             </picker-view>
           </div>
         </div>
