@@ -2,18 +2,62 @@
   <div>
     <!--填写订单-->
     <div class="glo-relative">
-        <map id="map"  :longitude="longitude" :latitude="latitude"  scale="15" :controls="controls"  :markers="markers"   @markertap="markertap"   @regionchange="regionchange"   @controltap="controltap" show-location style="width:750rpx; height: 516rpx;"></map>
+      <div class="relative">
+        <van-cell-group>
+          <van-field
+            :value="searchValue"
+            placeholder="请输入地址"
+            @change="onSearchChange"
+            left-icon="search"
+            clearable
+            use-button-slot
+          >
+            <van-button slot="button" size="small" @click="comfirm" type="primary">确定</van-button>
+          </van-field>
+        </van-cell-group>
+        <div class="relative">
+      <map
+        id="map"
+        :longitude="longitude"
+        :latitude="latitude"
+        scale="15"
+        :controls="controls"
+        :markers="markers"
+        @markertap="markertap"
+        @controltap="controltap"
+          @regionchange="getCenterMap1"
+          @end="getCenterMap"
+        show-location
+        style="width:750rpx; height: 500rpx;"
+      ></map>
+      <!-- 中心点 -->
+          <cover-image class="map" src="/static/images/map.png" />
+      </div>
+        <div class="suggest" v-show="searchValueStatus&&searchValue">
+          <scroll-view scroll-y class="lists">
+            <cover-view class="item" v-for="(item,index) in searchValueList" :key="index" @click="onSearchItem(index)">
+              <cover-view class="iteminfo">
+                <cover-view class="location-self">{{item.name}}</cover-view>
+                <cover-view class="sub">{{item.address}}</cover-view>
+              </cover-view>
+              <!-- <cover-image src="/static/images/choose2.png" class="choose" :class="{active:0==index}" /> -->
+            </cover-view>
+            <!-- 没有推荐地址提示 -->
+              <cover-view class="notAddress" v-show="searchValueList.length<1">没有找到输入的地址哦！</cover-view>
+          </scroll-view>
+        </div>
+      </div>
     </div>
     <!--列表-->
-    <div class="list">
-      <div class="item" v-for="(item,index) in locationlist" :key="index" @click="change(index)">
-            <div class="iteminfo">
-              <span class="location-self">{{item.name}}</span>
-              <p class="sub">{{item.address}}</p>
-            </div>
-            <img src="/static/images/choose2.png" class="choose" :class="{active:active==index}">
+    <scroll-view scroll-y class="list">
+      <div class="item" v-for="(item,index) in locationlist" :key="index" @click="change(item,index)">
+        <div class="iteminfo">
+          <span class="location-self">{{item.name}}</span>
+          <p class="sub">{{item.address}}</p>
         </div>
-    </div>
+        <img src="/static/images/choose2.png" class="choose" :class="{active:active==index}">
+      </div>
+    </scroll-view>
   </div>
 </template>
 
@@ -21,33 +65,51 @@
 import "../../css/common.css";
 import "../../css/global.css";
 import { mapState, mapMutations } from "vuex"; //vuex辅助函数
+import QQMapWX from "@/utils/qqmap-wx-jssdk"; //腾讯地图，reverseGeocoder逆地址转码
 export default {
-  onLoad(){
+  onLoad() {
     this.setBarTitle();
-    this.getAround()  //获取周边pio信息（经纬度 关键词）
+    // this.getAround(); //获取周边pio信息（经纬度 关键词）
     //this.getMapShow() //测试------根据城市名称获取地图
-    
+    // 实例化API核心类
+    this.qqmapsdk = new QQMapWX({
+      key: "3P2BZ-6G4WD-CEX43-PIV5G-3VDYH-N5BGH" // 必填
+    });
   },
-  onShow(){
+  onShow() {
     this.latitude=this.$store.state.latitude
     this.longitude=this.$store.state.longitude
-    //console.log(this.latitude)
+    this.active=0;
+      this.searchValue='';//搜索框的值
+    // console.log(this.latitude,this.longitude)
+    this.getCityinfo()
   },
-  data () {
+  data() {
     return {
-      locationlist:[ ],
-      active:'0',
-      markers:[{
-        iconPath: "/static/images/person.png",
-        id:1,
-        latitude: this.latitude,
-        longitude: this.longitude,
-        width:20,
-        height:25
-      }],
-      controls: [{  //控件不随着地图移动
+      qqmapsdk:null,//实例化API核心类
+      latitude: 0,
+      longitude: 0,
+      searchValue:'',//搜索框的值
+      searchValueStatus:false,
+      searchValueList:[],
+      searchValueItem:{},
+      locationlist: [],
+      active: 0,
+      markers: [
+        {
+          iconPath: "/static/images/person.png",
+          id: 1,
+          latitude: this.latitude,
+          longitude: this.longitude,
+          width: 20,
+          height: 25
+        }
+      ],
+      controls: [
+        {
+          //控件不随着地图移动
           id: 2,
-          iconPath: '/static/images/location.png',
+          iconPath: "/static/images/location.png",
           position: {
             left: 0,
             top: 150,
@@ -55,128 +117,176 @@ export default {
             height: 30
           },
           clickable: true
-      }],
-    }
+        }
+      ]
+    };
   },
-  computed:{
-   ...mapState(["cityName","nowPlace","longitude","latitude"])
-  },
-  components: {
-    
-  },
+  components: {},
   methods: {
-    ...mapMutations(["update"]),
     setBarTitle() {
       wx.setNavigationBarTitle({
         title: "位置"
       });
     },
-    getAround(){  //获取周边城市信息
-      wx.request({
-            url:"https://api.map.baidu.com/place/search?&query=大厦&location="+this.latitude+","+this.longitude+"&radius=1000&output=json&key=KpdqD9A6OzIRDWUV1Au2jcPgy9BZxDGG&",
-            header: {
-              "content-type": "application/x-www-form-urlencoded"
-            },
-            success:(res)=>{
-                //console.log(res.data.results,"poi检索")
-                this.locationlist=res.data.results
+    
+    //根据经纬度获取城市名称nowPlace 反地理转码
+    getCityinfo() {
+      return new Promise((resolved, rejected) => {
+        const that = this;
+        this.qqmapsdk.reverseGeocoder({
+          location: {
+            latitude: this.latitude,
+            longitude: this.longitude
+          },
+          success(res) {
+            const _res = res.result;
+              that.searchValueItem={
+                name:_res.formatted_addresses.recommend,
+                address:_res.address,
+                location:_res.location,
+                province:_res.address_component.province,
+                city:_res.address_component.city,
+                district:_res.address_component.district
+              }
+            console.log("地址转码成功", this.searchValueItem);
+              that.getCearchInfo()
+          },
+          fail: function(res) {
+            console.log(res);
           }
-        })
+        });
+      });
     },
-    controltap(){
-        wx.getLocation({
-          type: 'wgs84',
-          success:(data)=> {
-          // console.log(data,"微信地图")
-          // this.latitude=data.latitude
-          // this.longitude=data.longitude
-          this.$store.commit('update',
-                  { latitude:data.latitude,longitude:data.longitude
-                  });
-                  this.getAround()
-        },
-        fail:(info)=>{
-          //失败回调
-          console.log(info);
-          //如果用户拒绝授权
-          // 默认为北京
-          this.cityName = "北京市";
-          this.update({ cityName: "北京市" });
+    // change搜索框输入
+    onSearchChange(e){
+      const that = this;
+      console.log('输入了',e.mp.detail,this.searchValue)
+      this.searchValue = e.mp.detail
+      this.qqmapsdk.getSuggestion({
+        keyword:e.mp.detail,
+        page_size:15,
+        get_subpois:1,
+        success(res){
+           console.log('输入关键词提示',res)
+           let list =[]
+            res.data.map(item=>{
+              list.push({
+                name:item.title,
+                address:item.address,
+                location:item.location,
+                province:item.province,
+                city:item.city,
+                district:item.district
+              })
+            })
+            that.searchValueList = list;
+        }
+      })
+      this.searchValueStatus = true;
+    },
+    // 点击搜索推荐
+    onSearchItem(i){
+           console.log('location',this.searchValueList[i])
+            this.searchValueItem = this.searchValueList[i]
+        const location = this.searchValueList[i].location
+            this.latitude = location.lat
+            this.longitude= location.lng
+            this.searchValueStatus = false;
+            this.getCearchInfo()
+    },
+    // 搜索地址周边
+    getCearchInfo(){
+        const that = this;
+        const searchValueItem = this.searchValueItem
+        console.log(searchValueItem,searchValueItem.province+searchValueItem.city+searchValueItem.district)
+        this.qqmapsdk.search({
+          keyword:searchValueItem.city,
+          filter:'category=KTV,超市,酒店,餐饮,大厦,小区,广场',
+          location: {
+            latitude: this.latitude,
+            longitude: this.longitude
+          },
+          page_size:20,
+          success(res) {
+            console.log("地址转码成功", res);
+           let list =[]
+           
+              list.push({
+                name:searchValueItem.name,
+                address:searchValueItem.address,
+                location:searchValueItem.location,
+                province:searchValueItem.province,
+                city:searchValueItem.city,
+                district:searchValueItem.district
+              })
+            res.data.map(item=>{
+              list.push({
+                name:item.title,
+                address:item.address,
+                location:item.location,
+                province:item.province,
+                city:item.city,
+                district:item.district
+              })
+            })
+            that.locationlist = list;
+            // const _res = res.result;
+            // that.cityName = _res.address_component.city;
+            // that.update({
+            //   cityName: _res.address_component.city,
+            //   nowPlace:
+            //     _res.formatted_addresses.recommend + " - " + _res.address
+            // });
+          },
+          fail: function(res) {
+            console.log(res);
+          }
+        });
+    },
+    change: function(item,index) {
+      this.active = index;
+      this.latitude=item.location.lat
+      this.longitude=item.location.lng
+      console.log(item, "点击选中的位置");
+    },
+    // 地图视野是触发
+    getCenterMap1() {},
+    // 地图视野结束是触发
+    getCenterMap() {
+      const that = this;
+      console.log("自身位置坐标", this.longitude, this.latitude);
+      const map = wx.createMapContext("map");
+      map.getCenterLocation({
+        success(res) {
+          // 判断坐标一致，不用重复请求数据
+          if (
+            that.longitude === res.longitude &&
+            that.latitude === res.latitude
+          ) {
+            return false;
+          }
+          that.latitude = res.latitude;
+          that.longitude = res.longitude;
+          console.log("中心位置坐标", that.longitude, that.latitude);
+          that.getCityinfo();
         }
       });
     },
-    change:function(e){
-      this.active=e
-      // this.latitude=this.locationlist[e].location.lat
-      // this.longitude=this.locationlist[e].location.lng
-      console.log(this.locationlist[e],"点击选中的位置")
-      let address=this.locationlist[e].address;
-      this.update({ latitude:this.locationlist[e].location.lat,
-                longitude:this.locationlist[e].location.lng,
-                nowPlace:address
-          });
-      wx.navigateBack();
-     // console.log(address)
-      //  wx.request({
-      //       url:"https://api.map.baidu.com/geocoder/v2/?ak=KpdqD9A6OzIRDWUV1Au2jcPgy9BZxDGG&address="+address+"&output=json&src=webapp.baidu.openAPIdemo&coord_type= bd09ll",
-      //       header: {
-      //         "content-type": "application/x-www-form-urlencoded"
-      //       },
-      //       success:(res)=>{
-      //         const _res = res.data.result.location
-      //           console.log(_res.lat,_res.lng,"state")
-      //           // this.longitude=res.data.result.location.lng
-      //           // this.latitude=res.data.result.location.lat
-      //           this.update({ latitude:res.data.result.location.lat,
-      //                         longitude:res.data.result.location.lng
-      //                   });
-      //           //console.log(this,"选择位置页面")
-      //     }
-      //   })
-      
-    },
-    getMapShow(){  //测试根据城市名称获取地图
-       wx.request({
-            url:"https://api.map.baidu.com/geocoder/v2/?ak=KpdqD9A6OzIRDWUV1Au2jcPgy9BZxDGG&address=广州市&output=json&src=webapp.baidu.openAPIdemo&coord_type= bd09ll",
-            header: {
-              "content-type": "application/x-www-form-urlencoded"
-            },
-            success:(res)=>{
-              const _res = res.data.result.location
-                console.log(_res.lat,_res.lng,"state")
-                // this.longitude=res.data.result.location.lng
-                // this.latitude=res.data.result.location.lat
-                this.update({ latitude:res.data.result.location.lat,
-                              longitude:res.data.result.location.lng
-                        });
-                //console.log(this,"选择位置页面")
-          }
-        })
-        const MapContext=wx.createMapContext("map")
-        MapContext.getCenterLocation({
-          success:(res)=>{
-              console.log(res,"获取地图中心位置经纬度")
-              this.markers=[{
-                  iconPath: "/static/images/person.png",
-                  id:1,
-                  latitude: res.latitude,
-                  longitude: res.longitude,
-                  width:48,
-                  height:55
-              }]
-          }
-        })
+    // 点击确定
+    comfirm(){
+      console.log('active',this.locationlist[this.active])
+      const  location= this.locationlist[this.active].location
+      this.$store.commit('update',{
+        latitude : location.lat,
+        longitude : location.lng
+      })
+      wx.navigateBack()
     }
-    
   },
 
-  created () {
-    // let app = getApp()
-  }
-}
+};
 </script>
 
 <style lang="scss" scoped>
-  @import "./style";
-
+@import "./style";
 </style>

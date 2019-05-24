@@ -10,8 +10,10 @@ vue init mpvue/mpvue-quickstart myproject
 cd myproject
 
 # 安装依赖
-yarn
+npm install
 
+# 主颜色
+  按钮：ff6325
 # 开发时构建
 npm dev
 

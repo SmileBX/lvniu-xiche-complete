@@ -17,33 +17,43 @@
         >{{item.name}}</p>
       </div>
       <!--服务显示-->
-      <div class="" v-if="sershow">
+      <div class="sticky" v-if="sershow">
         <div class="caritem sershow">
           <!--洗车分类-->
           <text
-            v-for="(item,mindex) in barlist"
+            v-for="(item,mindex) in servincelist"
             :key="mindex"
-            :class="{activecolor:activecolor==mindex}"
-            @click="showItemServe(mindex)"
+            :class="{activecolor:activecolor==item.Id}"
+            @click="showItemServe(item.Id)"
+            v-if="item.list.length>0"
           >{{item.TypeName}}</text>
         </div>
-        <div class="ships sershow">以下为门店服务内容</div>
-        <div class="serlist ">
-          <div class="seritem sershow flex-container" v-for="(item,index) in servincelist" :key="index">
-            <div class="flex-container" style="width:80%" @click="goServiceProductsDetail(item.Id)">
-              <img :src="item.PicNo" class="smallcar">
-              <div class="flex-container col">
-                <p class="infotitle">{{item.Name}}</p>
-                <p class="infoitem">{{item.Synopsis}}</p>
-                <p class="serprice">
-                  <text>￥{{item.Price}}</text>
-                  <text>VIP:￥{{item.VipPrice}}</text>
-                </p>
+        <div class="ships">以下为门店服务内容</div>
+        <scroll-view scroll-y class="serlist" :scroll-into-view="'item'+activecolor" scroll-with-animation v-if="!isServiceOved">
+          <div class="listBox" :id="'item'+servincelists.Id" v-for="(servincelists,servincelistIndex) in servincelist" :key="servincelistIndex">
+            <div class="listBoxTitle" v-if="servincelists.list.length>0">{{servincelists.TypeName}}</div>
+            <div class="seritem sershow flex-container" v-for="(item,index) in servincelists.list" :key="index">
+              <div class="flex-container" style="width:80%" @click="goServiceProductsDetail(item.Id)">
+                <img :src="item.PicNo" class="smallcar">
+                <div class="flex-container col">
+                  <p class="infotitle">{{item.Name}}</p>
+                  <p class="infoitem">{{item.Synopsis}}</p>
+                  <p class="serprice">
+                    <text>￥{{item.Price}}</text>
+                    <text>VIP:￥{{item.VipPrice}}</text>
+                  </p>
+                </div>
               </div>
+              <div class="pay" @click="choseItem(item.Id)">立即购买</div>
             </div>
-            <div class="pay" @click="choseItem(item.Id)">立即购买</div>
           </div>
-        </div>
+        </scroll-view>
+        
+      <p
+        class="ovedMsg"
+        v-if="isServiceOved"
+        style="text-align:center;padding:20rpx;font-size:26rpx;color:#666;"
+      >没有数据了哦！</p>
       </div>
       <!--套餐显示-->
       <div class="meallist" v-if="dishshow">
@@ -68,31 +78,31 @@
       <!--评价显示-->
       <div v-if="pointshow" class="dish">
         <div class="head flex-container">
-          <div class="titleline">
-            <p class="shot"></p>
-            <p class="main">商户服务评价</p>
-            <p class="shot"></p>
-          </div>
-          <div class="flex-container">
-            <p>
-              <!-- <pointChildpic :commonlist="detailinfo.ServiceScore" ></pointChildpic> -->
-              <img
-                src="/static/images/xing.png"
-                v-for="item in detailinfo[0].ServiceScore"
-                :key="item"
-                class="xing-point bigs"
-              >
-              <img src="/static/images/gray1.png" 
-              v-for="rank in (5-detailinfo[0].ServiceScore)" :key="rank" class="xing-point">
-              <!--<img src="/static/images/xing.png" class="xing-point bigs">
-              <img src="/static/images/xing.png" class="xing-point bigs">
-              <img src="/static/images/xing.png" class="xing-point bigs">
-              <img src="/static/images/xing.png" class="xing-point bigs">-->
-            </p>
-            <text class="grad">{{detailinfo[0].ServiceScore}}.0分</text>
-          </div>
+            <div class="titleline">
+              <p class="shot"></p>
+              <p class="main">商户服务评价</p>
+              <p class="shot"></p>
+            </div>
+            <div class="flex-container">
+              <p>
+                <!-- <pointChildpic :commonlist="detailinfo.ServiceScore" ></pointChildpic> -->
+                <img
+                  src="/static/images/xing.png"
+                  v-for="item in detailinfo[0].ServiceScore"
+                  :key="item"
+                  class="xing-point bigs"
+                >
+                <img src="/static/images/gray1.png" 
+                v-for="rank in (5-detailinfo[0].ServiceScore)" :key="rank" class="xing-point">
+                <!--<img src="/static/images/xing.png" class="xing-point bigs">
+                <img src="/static/images/xing.png" class="xing-point bigs">
+                <img src="/static/images/xing.png" class="xing-point bigs">
+                <img src="/static/images/xing.png" class="xing-point bigs">-->
+              </p>
+              <text class="grad">{{detailinfo[0].ServiceScore}}.0分</text>
+            </div>
         </div>
-        <div class="flex-container pointmenu">
+        <div class="flex-container pointmenu sticky">
           <p
             v-for="(item,index) in pointlist"
             :key="index"
@@ -132,7 +142,7 @@ export default {
       detailinfo: [],
       typeid: 0,
       active: "服务",
-      activecolor: "0",
+      activecolor: '',
       servincelist: [],
       meallist: [],
       first: 0,
@@ -162,6 +172,7 @@ export default {
       dishshow: false,
       pointshow: false,
       isOved: false,
+      isServiceOved:false,
       isVisit:0, //是否到店还是上门2--到店;1--上门0--展示全部
     };
   },
@@ -171,11 +182,12 @@ export default {
     pointChildpic
   },
   onLoad() {
-    this.setBarTitle();
     this.shopid = this.$root.$mp.query.shopid;
     // isVisit 2--到店;1--上门;0--展示全部
     if(this.$root.$mp.query.isVisit){
       this.isVisit = this.$root.$mp.query.isVisit||0;
+    }else{
+      this.isVisit =0
     }
     console.log(this.shopid,this.isVisit ,"详情页接收");
   },
@@ -188,18 +200,36 @@ export default {
     this.meallist = [];
     this.commonlist = [];
     this.detailinfo = [];
+    this.activecolor='';
     this.sershow = true;
     this.dishshow = false;
     this.pointshow = false;
     this.isOved = false;
+    this.isServiceOved = false;
     this.Page = "1";
     this.typeid = 0;
-    this.activecolor = "0";
     this.active = "服务";
+    this.setBarTitle();
     this.getShopDetail();
     console.log(this.typeid, "page服务类型id");
   },
   methods: {
+    setBarTitle() {
+      let title = "商户详情"
+      if(this.isVisit==1){
+        title = '商户上门'
+      }
+      if(this.isVisit==2){
+        title = '商户到店'
+      }
+      // 其他位置进来，重新设置坐标
+      if(this.isVisit==0){
+        this.setMapMask()
+      }
+      wx.setNavigationBarTitle({
+        title
+      });
+    },
     async getShopDetail() {
       //商户详情
       var res = await post("Shop/GetMerchantDetail", {
@@ -224,62 +254,66 @@ export default {
     async getBarlist() {
       var res = await post("Server/GetServerType", {});
       if (res.code == 0) {
+        this.servincelist = [];
+        this.barlist =[]
         this.barlist = res.data;
-        this.typeid = res.data[0].Id
+        // this.typeid = res.data[0].Id
         console.log(this.barlist, "barlist服务分类");
       }
       this.showItem();
     },
       //服务项目列表
     async showItem() {
-      // wx.request({
-      //   url: "https://carapi.wtvxin.com/api/Server/ServiceProducts",
-      //   method: "POST",
-      //   data: {
-      //     Page: this.Page,
-      //     PageSize: this.PageSize,
-      //     TypeId: this.typeid,
-      //     //TypeId:33,
-      //     ShopId: this.shopid
-      //   },
-      //   header: {
-      //     "content-type": "application/json" // 默认值
-      //   },
-      //   success: res => {
-        if(this.isOved){
-          return false;
-        }
-        const params={
-          UserId:this.UserId,
-          Token:this.Token,
-          Page: this.Page,
-          PageSize: this.PageSize,
-          TypeId: this.typeid,
-          //TypeId:33,
-          ShopId: this.shopid
-        }
-          const res = await post('Server/ServiceProducts',params)
-          if (res.code == 0) {
-            //console.log(res,"服务列表")
-            // this.PageCount = res.data.count;
-            // if (parseInt(this.PageCount) % this.PageSize === 0) {
-            //   this.allPage = this.PageCount / this.PageSize;
-            // } else {
-            //   this.allPage = parseInt(this.PageCount / this.PageSize) + 1;
-            // }
-            if(res.data.length!==this.PageSize){
-              this.isOved = true;
-            }
-            this.servincelist = this.servincelist.concat(res.data);
-            // if (this.allPage > this.Page) {
-            //   this.isLoad = true;
-            // } else {
-            //   this.isLoad = false;
-            // }
-            console.log(this.servincelist, "服务产品列表");
+        let isOvedstatus = true;
+        for(let i=0;i<this.barlist.length;i+=1){
+          const barlist = this.barlist[i]
+          const params={
+            UserId:this.UserId,
+            Token:this.Token,
+            Page: this.Page,
+            PageSize: this.PageSize,
+            TypeId: barlist.Id,
+            //TypeId:33,
+            ShopId: this.shopid,
+            lat:this.lat,
+            lng:this.lng 
           }
-      //   }
-      // });
+            barlist.list=[]
+            const res = await post('Server/ServiceProducts',params)
+            if (res.code == 0) {
+              res.data.map(item=>{
+                console.log(this.isVisit,'this.isVisit')
+                // isVisit 2--到店;1--上门;0--展示全部
+                // 上门
+                if(this.isVisit==1&&item.ServiceMode==1){
+                  barlist.list.push(item)
+                }else
+                // 到店
+                if(this.isVisit==2&&item.ServiceMode!=1){
+                  barlist.list.push(item)
+                }else if(this.isVisit==0){ //全部
+                  barlist.list.push(item)
+                }
+              })
+              // 默认active分类
+                  if(!this.activecolor&&res.data.length>0){
+                    this.activecolor = barlist.Id
+                  }
+                // 判断是否有展示列表
+                console.log('123',barlist)
+                  if(barlist.list.length>0){
+                    isOvedstatus = false;
+                  }
+
+                  this.servincelist.push(barlist)
+              console.log(this.servincelist, "服务产品列表");
+            }
+        }
+                this.isServiceOved = isOvedstatus
+    },
+      //服务分类click
+    showItemServe(id) {
+      this.activecolor = id;
     },
     changeComment(e) {
       //获取不同类型评价列表
@@ -350,36 +384,16 @@ export default {
         console.log(res.data, "套餐列表");
       }
     },
-    async showItemServe(e) {
-      //不同服务类型列表
-      //console.log(e)
-      this.servincelist = [];
-      this.activecolor = e;
-      this.typeid = this.barlist[e].Id;
-      this.Page = "1";
-      this.isOved=false;
-      //console.log(this.typeid)
-      this.showItem();
-    },
-    setBarTitle() {
-      wx.setNavigationBarTitle({
-        title: "商户详情"
-      });
-    },
     async change(e) {
       console.log(e);
       this.active = e;
       this.Page = "1";
       this.isOved=false;
       if (e == "服务") {
-        this.servincelist = [];
         (this.sershow = true),
           (this.dishshow = false),
-          (this.pointshow = false),
-          (this.activecolor = 0);
-        this.typeid = "33";
-        this.getBarlist();
-        this.showItem();
+          (this.pointshow = false)
+        // this.getBarlist();
       } else if (e == "套餐") {
         (this.dishshow = true),
           (this.sershow = false),
@@ -410,6 +424,19 @@ export default {
         ProductId: e
       });
       wx.navigateTo({ url: "/pages/visitconfirmorder/main" });
+    },
+    // 重新设置坐标
+    setMapMask(){
+      // 获取定位
+      wx.getLocation({
+        type: "wgs84",
+        success: res => {
+          this.$store.commit('update',{
+            latitude:res.latitude,
+            longitude:res.longitude
+          })
+        }
+          });
     }
   },
 
@@ -417,19 +444,10 @@ export default {
     // let app = getApp()
   },
   onReachBottom() {
-    // if (this.isLoad) {
-    //   this.Page++;
-    //   this.showItem();
-    // } else if (this.isLoadCom) {
-    //   this.Page++;
-    //   this.showComment();
-    // } else {
-    //   this.isOved = true;
-    // }
     if(!this.isOved){
       this.Page+=1;
       if(this.active==='服务'){
-        this.showItem();
+        // this.showItem();
       }else if(this.active==='套餐'){
         this.getServiceMeal();
       }else{

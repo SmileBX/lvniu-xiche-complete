@@ -34,6 +34,7 @@
         <div class="flex-container infoslide white pad">
           <div>上门服务地点</div>
           <div>
+            <span></span>
             <img src="/static/images/back.png" class="right">
           </div>
         </div>

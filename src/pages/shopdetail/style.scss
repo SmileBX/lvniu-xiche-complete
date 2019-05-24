@@ -3,8 +3,14 @@
 }
 .title{
     justify-content: space-around;
-    padding:20rpx 0;
+    // padding:20rpx 0;
+    line-height:89rpx;
     border-bottom: 1rpx solid #f4f4f4;
+    position: sticky;
+    top:0;
+    left:0;
+    background:#fff;
+    z-index:99;
 }
 .active{
     font-weight:bold;
@@ -27,13 +33,19 @@
 .caritem{
     margin:10rpx 0;
 }
+.sticky{
+    position: sticky;
+    z-index:99;
+    top:90rpx;
+    left:0;
+    background:#fff;
+}
 .ships{
     background: #f3f8f4;
     font-size: 22rpx;
     color:#ff6325;
-    line-height:50rpx;
-    height:50rpx;
-    padding:5rpx 0;
+    line-height:60rpx;
+    padding:0 20rpx;
 }
 .smallcar{
     width:160rpx;
@@ -180,4 +192,12 @@
 }
 .pointsheet>div{
     border-bottom: 1rpx solid #eee;
+}
+.listBoxTitle{
+    font-size:30rpx;
+    line-height:70rpx;
+    padding:20rpx 20rpx 0;
+}
+.serlist{
+    height:70vh;
 }

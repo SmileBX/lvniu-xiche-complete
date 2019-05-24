@@ -49,9 +49,11 @@
     padding:30rpx;
 }
 .resultinfo{
-    padding:20rpx 0;
     text-align:center;
-    color:#ff6325
+    color:#ff6325;
+    background:#fff;
+    line-height:100rpx;
+    font-size:34rpx;
 }
 .calenderMask{
     position:fixed;
@@ -72,3 +74,79 @@
 .confirm{
     color:#ff6325;
 }
+// 产品信息展示***************************************
+/*弹性布局*/
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .clomn {
+    flex-direction: column;
+  }
+  .proinfo {
+    padding: 20rpx 30rpx;
+  }
+  .inforight{
+    width:100%;
+  }
+  .orderimg {
+    width: 160rpx;
+    height: 160rpx;
+    vertical-align: middle;
+    margin-right: 30rpx;
+  }
+  .price{
+    // width:100%;
+  }
+  .infospec {
+    color: #999;
+    font-size: 24rpx;
+  }
+  .infoprice {
+    font-size: 36rpx;
+    color: #ff6666;
+    // flex-flow: nowrap;
+    
+  }
+  .flex-right{
+    // flex-flow:row-reverse nowrap;
+    // justify-content:flex-end;
+    align-items:flex-end;
+  }
+  .infoprice p + p {
+    color: #1a1a1a;
+    font-size: 28rpx;
+  }
+  .pad {
+    padding: 20rpx 30rpx;
+  }
+  .infotitle,.infospec{
+    width:100%;
+  }
+  .specpic {
+    width: 48rpx;
+    height: 44rpx;
+    vertical-align: middle;
+  }
+  .shopnum {
+    margin: 0 20rpx;
+    color: #1a1a1a;
+    font-size: 24rpx;
+    width: 40rpx;
+    text-align: center;
+  }
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+  }
+  .orderNo{
+      border-top:1rpx solid #e8e8e8;
+      padding:0 30rpx;
+      line-height:90rpx;
+      font-size:30rpx;
+      color:#999;
+      background:#fff;
+  }
+// 产品信息展示end***************************************

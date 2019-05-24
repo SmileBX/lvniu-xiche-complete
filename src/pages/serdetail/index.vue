@@ -15,7 +15,7 @@
       <div class="hr"></div>
       <!--服务项目-->
       <div class="flex-container item">
-          <div>
+          <div >
               <div class="sertitle">服务项目</div>
               <div class="sercomplain">{{detailinfo.Name}}</div>
               <!-- <div class="flex-container iteminfo">
@@ -93,7 +93,7 @@
       </div>
       <!--位置-->
       <div class="flex-container item">
-          <div>
+          <div @click="goShopDetail(ShopData.ShopId)">
               <p class="sertitle">{{ShopData.ShopNick}}</p>
               <p class="sercomplain">{{ShopData.Address}}</p>
           </div>
@@ -314,6 +314,10 @@ export default {
       this.isshow = false;
       this.showDiscount = false;
     },
+    // 跳转到店铺详情
+    goShopDetail(id){
+      wx.navigateTo({url:'/pages/shopdetail/main?shopid='+id})
+    }
   },
 
   created () {

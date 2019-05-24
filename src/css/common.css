@@ -232,3 +232,12 @@ img{
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+
+.van-button--primary{
+  background-color:#ff6325!important;
+border:1px solid #ff6325!important;
+
+}
+.glo-relative .van-cell{
+  align-items:center;
+}

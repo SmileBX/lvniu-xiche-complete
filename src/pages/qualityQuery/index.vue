@@ -26,7 +26,22 @@
             
         </div>
         <div class="result">验证结果：</div>
-        <div class="resultinfo white" v-show="checkInput">{{checkInput}}</div>  
+        <div class="resultinfo white" v-show="checkInput">{{checkInput}}</div>
+        <div class="orderNo">订单编号：546413222226545879321</div>
+        <div class="proinfo flex-container pad">
+          <div >
+            <img :src="img" class="orderimg">
+          </div>
+          <div class="inforight">
+            <div class="infotitle" >镀晶产品</div>
+            <div class="infospec">白色 大码</div>
+            <div class="infoprice flex-center">
+              <p class="price">￥111</p>
+              <p >x2</p>
+            </div>
+          </div>
+        </div> 
+
       </div>
       <!--遮罩层-->
       <!-- <div class="mask-modal" v-if="isshow"></div>
@@ -67,12 +82,14 @@ export default {
   data () {
     return {
         inputTxt:"",
-        checkInput:''
+        checkInput:'',
+        orderDetail:{
+          
+        }
     }
   },
 
   components: {
-    
   },
   computed:{
      

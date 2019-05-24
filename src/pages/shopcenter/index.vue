@@ -4,23 +4,27 @@
     <div>
       <scroll-view scroll-y class="ser-menu">
         <div
-          v-for="(item,index) in menulist"
+          v-for="(item,index) in productlist"
           :key="index"
-          :class="{'active':activeClassifyId==item.id}"
-          @click="activeClassify(item.id)"
+          :class="{'active':activeClassifyId==item.classifyId}"
+          @click="activeClassify(item.classifyId)"
           class="nemeitem"
+          v-if="item.list.length>0"
         >
-          <text class="title">{{item.name}}</text>
+          <text class="title">{{item.classifyName}}</text>
         </div>
       </scroll-view>
     </div>
     <!--右列表-->
     <scroll-view scroll-y class="list" :scroll-into-view="'item'+activeClassifyId" scroll-with-animation>
       
-      <div class="listBox" :id="'item'+product.classifyId" v-for="(product,productIndex) in productlist" :key="productIndex">
+      <div class="listBox" :id="'item'+product.classifyId" 
+       v-for="(product,productIndex) in productlist" :key="productIndex"
+       v-if="product.list.length>0"
+       >
         <div class="list_title">{{product.classifyName}}</div>
         <div class="null" v-if="product.list.length<1"></div>
-        <div class="flex-container intitem" v-for="(item,index) in product.list"  :key="item.id">
+        <div class="flex-container intitem" v-for="(item,index) in product.list"  :key="index">
           <div class="flex-container cartdetal">
             <div>
               <img
@@ -50,11 +54,11 @@
                 <p class="price">￥{{item.price}}</p>
                 <!-- <div v-show="item.isAttr"> -->
                 <div v-if="item.ServiceMode!=1">
-                  <img src="/static/images/s1.png" @click="lessNumber(index)" class="tippic">
+                  <img src="/static/images/s1.png" @click="lessNumber(item)" class="tippic">
                   <text class="nums">{{item.num}}</text>
-                  <img src="/static/images/addcart.png" @click="addNumber(index)" class="tippic">
+                  <img src="/static/images/addcart.png" @click="addNumber(item)" class="tippic">
                 </div>
-                <div class="pay" v-else @click="goDetail(item.brandId,item.id)">立即购买</div>
+                <div class="pay" v-else @click="goVisitconfirmorder(item.brandId,item.id)">立即购买</div>
               </div>
             </div>
           </div>
@@ -193,8 +197,8 @@ export default {
       const that = this;
       this.productlist =[]
           console.log(this.activeClassifyId,'activeClassifyId')
-      this.menulist.map(async (item)=>{
-        
+        for(let i=0;i<this.menulist.length;i+=1){
+            const item = this.menulist[i]
           const params = {
             page: this.page,
             pageSize: this.pageSize,
@@ -228,7 +232,7 @@ export default {
                 classifyName:item.name,
                 list
             })
-      })
+      }
       this.getCarData();
             
     },
@@ -237,11 +241,11 @@ export default {
             this.activeClassifyId = id
     },
     // 删除购物车
-    async lessNumber(index) {
+    async lessNumber(item) {
       // if (this.productlist[index].num > 0) {
       //   this.productlist[index].num -= 1;
       // }
-      const product = this.productlist[index];
+      const product = item;
       let carId = "";
       let num = 0;
       let status = true;
@@ -277,16 +281,17 @@ export default {
         await post("Cart/EditCart", params);
       } else if (num === 0) {
         const res = await post("Cart/DelCart", params);
-        if (res.code * 1 === 0) {
-          this.productlist[index].num = 0;
-        }
+        // if (res.code * 1 === 0) {
+        //   this.productlist[index].num = 0;
+        // }
       }
       this.getCarData();
     },
     // 添加购物车
-    async addNumber(index) {
+    async addNumber(item) {
       // this.productlist[index].num += 1;
-      const product = this.productlist[index];
+      console.log(item,'item')
+      const product = item;
       const params = {
         UserId: this.userId,
         Token: this.token,
@@ -349,9 +354,15 @@ export default {
         const productlist = this.productlist;
         for (let j = 0; j < productlist.length; j += 1) {
           const _productlist = productlist[j];
-          if (datas.ProductId === _productlist.id) {
-            this.productlist[j].num = datas.Number;
-          }
+          _productlist.list.map((item,index)=>{
+            if (datas.ProductId === item.id) {
+              this.productlist[j].list[index].num = datas.Number;
+            }else{
+              // this.productlist[j].list[index].num = 0;
+              this.$set(this.productlist[j].list[index],'num',0)
+              console.log(this.productlist[j].list[index])
+            }
+          })
         }
       }
       this.carPrice = carPrice.toFixed(2);
@@ -392,6 +403,17 @@ export default {
       // if (a === 24) {
       //   wx.navigateTo({ url: "/pages/djdetail/main?id=" + id });
       // }
+    },
+    // 跳转结算页
+    goVisitconfirmorder(type, id){
+            this.$store.commit('update',{
+              latitude: this.latitude,
+              longitude: this.longitude
+            });
+      this.$store.commit("setVisitConfirmOrder",{
+          ProductId:id
+      })
+        wx.navigateTo({ url: "/pages/visitconfirmorder/main?proid=" + id });
     },
     toPAy() {
       wx.navigateTo({ url: "/pages/confirmorder/main" });

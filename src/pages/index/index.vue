@@ -102,14 +102,13 @@
       </cover-view>
       <!--我要洗车-->
       <cover-view class="modal-xiche" v-if="isXiche">
-        <!-- <cover-view class="line flex-container" @click="choseLocation"> -->
-        <cover-view class="line flex-container">
+        <cover-view class="line flex-container" @click="choseLocation">
           <cover-view class="flex-container">
             <cover-image src="/static/images/yellow.png" class="diandian"/>
             <cover-view class="location-self">{{nowPlace}}</cover-view>
           </cover-view>
           <!-- 更改地图位置，搜索位置 -->
-          <!-- <cover-image src="/static/images/back.png" style="width:12rpx;height:22rpx;padding-left:10rpx;"/> -->
+          <cover-image src="/static/images/back.png" style="width:12rpx;height:22rpx;padding-left:10rpx;" />
         </cover-view>
         <cover-view class="line flex-container">
           <cover-view class="flex-container">
@@ -242,6 +241,9 @@ export default {
     wx.stopPullDownRefresh(); //关闭下拉刷新
     this.initData();
     if (this.userId && this.token) {
+      let lat = this.$store.state.latitude
+      let lon = this.$store.state.longitude
+
       // 初始展示上门还是到店
       // 判断城市名称是否被更改，获取城市中心位置
       if (this.cityName !== this.$store.state.cityName) {
@@ -249,6 +251,12 @@ export default {
         // this.isXiche = false;
         this.cityName = this.$store.state.cityName;
         this.cityNameGetPosition();
+      }else 
+      // 更新了地理位置
+      if(lat != this.latitude||lon!==this.longitude){
+            this.latitude = lat;
+            this.longitude = lon;
+            this.getCityinfo()
       }
 
       // if (this.$root.$mp.query.name) {
