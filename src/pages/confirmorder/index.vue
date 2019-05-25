@@ -78,7 +78,7 @@
        <div class="integral">
         <checkbox-group @change="checkboxChange">
           <label class="checkbox flex-container">
-              使用积分抵扣(100积分抵扣1元，目前积分1354)
+              可用1254积分抵扣125.00元
             <checkbox :value="name" :checked="checked" color="#ff6325"/>
           </label>
         </checkbox-group>

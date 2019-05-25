@@ -47,7 +47,7 @@
           </div>
         </div>
         
-        <div class="flex-container infoslide white pad" @click="choosedate()">
+        <div class="flex-container infoslide white pad" @click="selectTimeStatus = true;">
           <div>预约服务时间</div>
           <div>
             <img src="/static/images/back.png" class="right">
@@ -118,7 +118,7 @@
        <div class="integral">
         <checkbox-group @change="checkboxChange">
           <label class="checkbox flex-container">
-              使用积分抵扣(100积分抵扣1元，目前积分1354)
+              可用1254积分抵扣125.00元
             <checkbox :value="name" :checked="checked" color="#ff6325"/>
           </label>
         </checkbox-group>
@@ -156,7 +156,7 @@
           <div class="freeRoom">
             <div>
               <!--<div class="timeText">{{year}}年{{month}}月{{day}}日</div>-->
-              <picker-view class="pickerView" :value="value" @change="bindDateChangeStart">
+              <picker-view class="pickerView" :value="time" @change="bindDateChangeStart">
                 <picker-view-column class="pickerColumn">
                   <div class="pickerItem" v-for="(item,key) in hourses" :key="key">{{item}}点</div>
                 </picker-view-column>
@@ -264,7 +264,7 @@ export default {
       minutes: [],
       shopTime: "", //商铺的营业时间
       datetip: "", //选中的日期
-      time: [0, 0], //时间
+      time: [0,0], //时间
       nowhour: "", //当前的时间
       addImgUrl, //上传图片按钮图片,
       xicheProductArr: [],
@@ -300,6 +300,7 @@ export default {
   },
   onShow() {
     this.initData();
+    this.choosedate()
     this.Token = wx.getStorageSync("token");
     this.UserId = wx.getStorageSync("userId");
     if (this.isXiche) {
@@ -568,7 +569,8 @@ export default {
     choosedate() {
       this.datelist = [];
       const ddd = new Date();
-      //console.log(date)
+      console.log('ddd.getHours()',ddd.getHours())
+      this.time[0] = this.nowhour+1 //最近预约时间
       const year = ddd.getFullYear();
       const month = ddd.getMonth() + 1;
       const date = ddd.getDate();
@@ -584,7 +586,6 @@ export default {
       this.datetip = this.datelist[0];
       this.gethous();
       this.getMinutes();
-      this.selectTimeStatus = true;
     },
     gethous() {
       for (let i = 0; i < 24; i++) {
@@ -593,18 +594,21 @@ export default {
         }
         this.hourses.push(i);
       }
+      this.time[0] = this.nowhour+1 //最近预约时间
     },
     getMinutes() {
       for (let i = 0; i < 60; i++) {
         if (i.toString().length < 2) {
           i = "0" + i;
         }
+      if(i%10==0){
         this.minutes.push(i);
+      }
       }
     },
     // 更改时间
     bindDateChangeStart(e) {
-      //console.log(e)
+      console.log(e.mp.detail,'e.mp.detail')
       // valIndex 是获取到的年月日在各自集合中的下标
       this.time = e.mp.detail.value;
       // console.log(JSON.stringify(e.mp.detail.value))
