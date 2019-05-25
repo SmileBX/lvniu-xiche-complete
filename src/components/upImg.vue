@@ -52,6 +52,10 @@ export default {
     this.imgBase = [];
     this.imgPathArr = [];
     this.isShowBtnUpload = true;
+    console.log('图片组件',this.title,this.imgLength,this.addImgUrl)
+  },
+  onShow(){
+    console.log('图片组件',this.title,this.imgLength,this.addImgUrl)
   },
   methods: {
     // 选择图片

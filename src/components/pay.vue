@@ -4,9 +4,10 @@
     <div class="mask-modal" @click="goUrl"></div>
     <!--确认付款-->
     <div v-show="showPayType" class="paymask white">
-      <div class="paytile">
+      <div class="paytile flex-container">
         <img src="/static/images/close.png" class="close" @click="goUrl">
         <text>确认付款</text>
+        <span @click="goSetPassword">忘记支付密码？</span>
       </div>
       <div class="maskprice">￥{{total}}</div>
       <div class="flex-container maskitem">
@@ -236,6 +237,21 @@ export default {
         console.log("跳转");
         wx.redirectTo({ url: this.closeUrl });
       }
+    },
+    goSetPassword(){
+      wx.showModal({
+        title:'设置密码',
+        content:'订单已创建，请前往我的订单进行支付！',
+        confirmColor:'#ff6325',
+        success(res){
+          if(res.confirm){
+            wx.redirectTo({ url: '/pages/setpassword/main' });
+          }else if(res.cancel){
+
+          }
+        }
+
+      })
     }
   }
 };
@@ -252,6 +268,13 @@ export default {
 }
 .payPassword {
   text-align: right;
+}
+.paytile{
+  span{
+    padding-top:20rpx;
+    font-size:20rpx;
+    color:#999;
+  }
 }
 </style>
 

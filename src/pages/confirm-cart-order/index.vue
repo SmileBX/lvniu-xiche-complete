@@ -123,6 +123,16 @@
         </div>
       </div>
     </div>
+      <div class="fixed">
+      <!-- 积分抵扣 -->
+       <div class="integral">
+        <checkbox-group @change="checkboxChange">
+          <label class="checkbox flex-container">
+              使用积分抵扣(100积分抵扣1元，目前积分1354)
+            <checkbox :value="name" :checked="checked" color="#ff6325"/>
+          </label>
+        </checkbox-group>
+       </div>
     <!--底部按钮-->
     <div class="botbtn">
       <div class="price white">
@@ -130,6 +140,7 @@
         <span>￥{{AllPrice}}</span>
       </div>
       <div class="btnconfir" @click="goPay">提交订单</div>
+    </div>
     </div>
     <!--选择优惠券-->
     <Coupon
@@ -566,7 +577,7 @@ export default {
 @import "./style";
 @import "../../css/common.css";
 .serviceItem {
-  padding-bottom: 90rpx;
+  padding-bottom: 150rpx;
 }
 .infoslide img {
   margin-left: 10rpx;

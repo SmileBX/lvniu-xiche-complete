@@ -1,7 +1,10 @@
+
+// 服务地址
 .place{
     width:28rpx;
     height:41rpx;
 }
+
 .orderhead{
     padding:20rpx;
     align-items: flex-start;
@@ -29,6 +32,7 @@
     color:#e3d1bc;
     font-size:24rpx;
 }
+// 服务地址end
 .protitle{
     font-weight: bold;
     font-size:30rpx;
@@ -95,9 +99,6 @@
 
 
 .botbtn{
-    position:fixed;
-    bottom:0;
-    left:0;
     display: flex;
     justify-content: space-between;
     width:100%;
@@ -141,10 +142,10 @@
 .close{
     width:28rpx;
     height:28rpx;
-    position: absolute;
-    top:50%;
-    left:20rpx;
-    margin-top:-14rpx;
+    // position: absolute;
+    // top:50%;
+    // left:20rpx;
+    // margin-top:-14rpx;
 }
 .maskprice{
     font-weight: bold;
@@ -185,4 +186,11 @@
 }
 .pad{
     padding:20rpx 30rpx;
+}
+.integral{
+  font-size:25rpx;
+  color:#999;
+  padding:10rpx 20rpx;
+  background:#fff;
+  border-top:1rpx #e8e8e8 solid;
 }

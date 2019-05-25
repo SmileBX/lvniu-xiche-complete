@@ -5,11 +5,12 @@
       <scroll-view scroll-y style="height:100vh;">
         <div
           style="padding:30rpx 0"
-          v-for="(item,index) in menulist"
+          v-for="(item,index) in servicelist"
           :key="index"
           :class="{active:scrollItem==item.Id}"
           @click="change(item.Id)"
           class="nemeitem"
+          v-if="item.list.length>0"
         >
           <text class="title">{{item.TypeName}}</text>
         </div>
@@ -20,10 +21,11 @@
     <scroll-view
       scroll-y
       :scroll-into-view="'item'+scrollItem"
+      scroll-with-animation
       class="list"
       style="margin-left:32%;padding-bottom:90rpx;height:100vh;box-sizing:border-box;"
      >
-      <div :id="'item'+servicelists.Id" v-for="(servicelists,pindex) in servicelist" :key="pindex">
+      <div :id="'item'+servicelists.Id" v-for="(servicelists,pindex) in servicelist" :key="pindex" v-if="servicelists.list.length>0">
         <div
           class="listTitle"
           :class="servicelists.list.length<1?'listTitle_margin100':''"
@@ -49,7 +51,8 @@
             <input
               type="checkbox"
               class="checkbox-cart"
-              :checked="item.isSelect"
+              :checked="item.isSelect" 
+              @click="oneClick(pindex,index)"
             >
           </div>
         </div>
@@ -136,7 +139,7 @@ export default {
     getProlist() {
       let arr = [];
       this.menulist.map(async (item, index) => {
-        let res = await post("/Server/ChooseServiceProducts", {
+        let res = await post("Server/ChooseServiceProducts", {
           Page: this.Page,
           PageSize: this.PageSize,
           TypeId: item.Id,
@@ -174,11 +177,6 @@ export default {
       //点击菜单获取产品列表
       console.log("checkedSelectArr", id);
       this.scrollItem = id;
-      // this.active=e
-      // this.Page=1
-      // this.TypeId=this.menulist[e].Id
-      // this.servicelist=[]
-      // this.getProlist()
     },
     selectProduct: function() {
       //遍历servicelist，全部取反
@@ -191,6 +189,8 @@ export default {
     },
     oneClick(index,i) {
       const servicelist = this.servicelist[index].list[i]
+      
+          console.log("3",servicelist);
       if (!servicelist.isSelect) {
         this.selectArr.push(servicelist);
       } else {
@@ -213,16 +213,9 @@ export default {
       this.isSelectAll = isSelectAll;
     },
     submit() {
-      //console.log(this.servicelist)
-      // const serItem=[]
-      // for(var i=0;i<this.servicelist.length;i++){
-      //     if(this.servicelist[i].isSelect){
-      //       serItem.push(this.servicelist[i])
-      //     }
-      // }
-      wx.setStorageSync("serItem", this.selectArr);
       if (this.selectArr.length > 0) {
-        wx.navigateBack({ url: "/pages/location/main" });
+        wx.setStorageSync("serItem", this.selectArr);
+        wx.navigateBack();
       } else {
         wx.showToast({
           title: "请选择要服务项目",
@@ -231,17 +224,6 @@ export default {
         });
         return false;
       }
-      // const tip=JSON.stringify(serItem)
-      // if(serItem.length>0){
-      //   wx.navigateTo({ url: "/pages/location/main?serItem="+tip })
-      // }else{
-      //   wx.showToast({
-      //     title: "请选择要服务项目",
-      //     icon: "none",
-      //     duration: 2000
-      //   });
-      //   return false
-      // }
     }
   },
 
@@ -251,7 +233,6 @@ export default {
   // onReachBottom(){
   //   if(this.isLoad){
   //     this.Page++;
-  //     this.getProlist();
   //   }else{
   //     wx.showToast({
   //         title: "没有更多商品啦。。。",

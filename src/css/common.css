@@ -241,3 +241,12 @@ border:1px solid #ff6325!important;
 .glo-relative .van-cell{
   align-items:center;
 }
+
+.fixed{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  z-index:50;
+  background:#fff;
+}

@@ -577,6 +577,7 @@ export default {
     choseLocation() {
       wx.navigateTo({ url: "/pages/locationorder/main" });
     },
+    // 跳转洗车
     washCar() {
       console.log('shopInfo',this.shopInfo);
       if (!this.shopInfo.id) {
@@ -584,10 +585,14 @@ export default {
         this.showShop = true;
         return false;
       }
+      wx.setStorageSync("serItem",[]);
       // wx.setStorageSync("shopInfo", this.shopInfo);
       // console.log(this.shopInfo, this.shopId, "跳转我要洗车");
-      // wx.navigateTo({ url: "/pages/location/main?shopId=" + this.shopId });
-      this.toShopdet(this.shopInfo.id,1)
+      // this.$store.commit('update',{
+      //   visitconfirmorder:{ProductId:this.shopInfo.id}
+      // })
+      wx.navigateTo({ url: `/pages/visitconfirmorder/main?shopId=${this.shopInfo.id}&type=洗车` });
+      // this.toShopdet(this.shopInfo.id,1)
       
     },
     goTo(e) {

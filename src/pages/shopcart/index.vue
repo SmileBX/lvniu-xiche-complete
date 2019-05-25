@@ -42,17 +42,7 @@
       </div>
       <div class="delete botbtn" v-else>
         <div class="price"></div>
-        <div class="btnconfir" @click="Delete">删除</div>
-      </div>
-    </div>
-    <!--删除遮罩层-->
-    <div class="mask-modal" v-if="showMask"></div>
-    <!--删除遮罩层-->
-    <div v-if="showDelete" class="maskdelete flex-container clomn">
-      <div>您确定要删除所选商品吗？</div>
-      <div class="flex-container bottombtn">
-        <div @click="cancelDel">取消</div>
-        <div @click="deleteCar">确认</div>
+        <div class="btnconfir" @click="deleteCar">删除</div>
       </div>
     </div>
     <!--参数遮罩层-->
@@ -73,7 +63,7 @@ export default {
       token: "",
       carData: [],
 
-      showMask: false,
+      // showMask: false,
       isShow: true,
       showDelete: false,
       showSpecs: false,
@@ -141,6 +131,7 @@ export default {
     this.userId = wx.getStorageSync("userId");
     this.token = wx.getStorageSync("token");
     this.isSelectAll = false;
+    this.isShow = true;
     this.setBarTitle();
     
       // 获取定位
@@ -242,12 +233,30 @@ export default {
       // 数量大于0，编辑购物车
       // 数量等于0，删除购物车
       if (num < 1) {
-        wx.showToast({
-          title: "受不了了，宝贝不能再减少了哦！",
-          icon: "none"
-        });
-        this.carData[index].num = 1;
+        const that = this;
+        wx.showModal({
+        content:'您确定要删除所选商品吗？',
+        confirmColor:'#ff6325',
+        success(res){
+          if(res.confirm){
+            console.log('id', num);
+            const data=[{
+                CartId: id,
+                Total: 1,
+                SpecText: ''
+              }];
+            that.details(data)
+          }else if(res.cancel){
+
+          }
+        }
+        })
         return false;
+        // wx.showToast({
+        //   title: "受不了了，宝贝不能再减少了哦！",
+        //   icon: "none"
+        // });
+        // this.carData[index].num = 1;
       }
       if (num > this.carData[index].stock) {
         wx.showToast({
@@ -262,19 +271,32 @@ export default {
       return true;
     },
     // 删除购物车
-    async deleteCar() {
-      let data = [];
-      for (let i = 0; i < this.carData.length; i += 1) {
-        const _carData = this.carData[i];
-        if (_carData.isSelect) {
-          data.push({
-            CartId: _carData.id,
-            Total: _carData.num,
-            SpecText: _carData.skuSubmit
-          });
-        }
-      }
+    deleteCar() {
+       const that = this;
+        wx.showModal({
+        content:'您确定要删除所选商品吗？',
+        confirmColor:'#ff6325',
+        success(res){
+          if(res.confirm){
+              let data = [];
+              for (let i = 0; i < that.carData.length; i += 1) {
+                const _carData = that.carData[i];
+                if (_carData.isSelect) {
+                  data.push({
+                    CartId: _carData.id,
+                    Total: _carData.num,
+                    SpecText: _carData.skuSubmit
+                  });
+                }
+              }
+              that.details(data)
+          }else if(res.cancel){
 
+          }
+        }
+        })
+    },
+    async details(data){
       this.showMask = false;
       this.showDelete = false;
       const params = {
@@ -290,25 +312,9 @@ export default {
       });
       this.getCarData();
     },
+    // 更改编辑状态
     editPro() {
       this.isShow = !this.isShow;
-      // this.showDelete=!this.showDelete
-    },
-    Delete() {
-      this.showMask = true;
-      this.showDelete = true;
-    },
-    // 取消删除
-    cancelDel() {
-      this.showMask = false;
-      this.showDelete = false;
-      // this.isShow = true;
-    },
-    // 确定删除
-    confirmDel() {
-      this.showMask = false;
-      this.showDelete = false;
-      this.isShow = true;
     },
     submit() {
       const cartIds = [];

@@ -1,9 +1,12 @@
 <template>
   <div class="backgray">
     <div class="suminfo white">
+      <div class="flex-container">
       <div class="title">
         <span>充值账户:</span>
         <span class="yellow" v-if="isHasInfo">{{memberInfo.Mobile}}</span>
+      </div>
+      <div class="isSetPassword" v-if="!memberInfo.IsSecondPassWord" @click="goSetPassword">未设置支付密码</div>
       </div>
       <div class="flex-container charge" v-if="list.length>0">
         <div
@@ -147,6 +150,12 @@ export default {
           duration: 2000
         })
       }
+    },
+    // 跳转设置支付密码
+    goSetPassword(){
+      wx.navigateTo({
+        url:'/pages/setpassword/main'
+      })
     }
   },
 

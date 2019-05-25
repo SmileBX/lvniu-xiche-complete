@@ -1,7 +1,7 @@
 <template>
   <div class="backgray">
     <div>
-      <!---->
+      <!--服务商家-->
       <div class="flex-container clomn ordershophead white">
         <div class="orderserve">服务商家</div>
         <div class="flex-container ordermain" v-if="orderinfo.ShopData">
@@ -11,9 +11,24 @@
             <p>{{orderinfo.ShopData.Address}}</p>
           </div>
         </div>
-        <div class="ordertips">(温馨提示：请直接至门店进行洗车服务)</div>
+        <div class="ordertips" v-if="!isXiche">(温馨提示：请直接至门店进行洗车服务)</div>
       </div>
       <div class="slide"></div>
+      <!-- 服务地址 -->
+      <div class="flex-container clomn orderhead white" v-if="isXiche" @click="goSelectAddress">
+        <div class="orderserve">服务地址</div>
+        <div class="orderuser">
+          <p>联系人：{{address.name}}</p>
+          <p>{{address.phone}}</p>
+        </div>
+        <div class="flex-container addressContent">
+          <img src="/static/images/place.png" class="place">
+          <text class="placeinfo">详细地址：{{address.address}}</text>
+          <img src="/static/images/back.png" class="right">
+        </div>
+        <div class="ordertips">(温馨提示：请核对服务地址是否正确)</div>
+        <div class="slide"></div>
+      </div>
       <!--订单详情-->
       <div class="white proinfo">
         <div class="orderserve">服务项目</div>
@@ -25,31 +40,24 @@
           </div>
         </div>
         <!-- 上门订单 -->
-        <div class="flex-container infoslide white pad" @click="selectItem">
+        <div class="flex-container infoslide white pad" @click="selectItem"  v-if="isXiche">
           <div>增加服务项目</div>
           <div>
             <img src="/static/images/back.png" class="right">
           </div>
         </div>
-        <div class="flex-container infoslide white pad">
-          <div>上门服务地点</div>
+        
+        <div class="flex-container infoslide white pad" @click="choosedate()">
+          <div>预约服务时间</div>
           <div>
-            <span></span>
             <img src="/static/images/back.png" class="right">
           </div>
         </div>
-
         <div class="flex-container infoslide white pad" @click="choseItem(1)">
           <div>服务车辆</div>
           <div>
             <span v-if="CarInfo">{{CarInfo}}</span>
             <img src="/static/images/back.png" class="right" v-else>
-          </div>
-        </div>
-        <div class="flex-container infoslide white pad" @click="choosedate()">
-          <div>上门服务时间</div>
-          <div>
-            <img src="/static/images/back.png" class="right">
           </div>
         </div>
         <div class="flex-container infoslide white pad" @click="choseItem(3)">
@@ -71,32 +79,31 @@
         </div>
 
         <!-- 上门订单 -->
-        <div class="flex-container infoslide white pad inputbor" >
+        <div class="flex-container infoslide white pad inputbor"  v-if="!isXiche">
           <div>联系人</div>
           <input type="text" placeholder="填写联系人" class="inputmes" v-model="Remarks">
         </div>
-        <div class="flex-container infoslide white pad inputbor">
+        <div class="flex-container infoslide white pad inputbor"  v-if="!isXiche">
           <div>联系电话</div>
           <input type="text" placeholder="填写联系电话" class="inputmes" v-model="Remarks">
         </div>
-        <div class="ml-20">
-        <upImg title="添加现场照片" 
-          :imgLenght ='8' 
-          :addImgUrl="addImgUrl" 
-          @upImgs="upImgSuccess"
-          >
-        </upImg>
+        <div class="ml-20"  v-if="isXiche">
+          <upImg title="添加现场照片" :imgLenght="8" :addImgUrl="addImgUrl" @upImgs="upImgSuccess"></upImg>
         </div>
-        <div class="inputbor flex-container white pad bt-eee">
+        <div class="inputbor flex-container white pad bt-eee"  v-if="isXiche">
           <div>备注信息</div>
-          
         </div>
-        <div class="infoslide textarea">
-          <textarea name="" id="" cols="20" rows="10" class="infobg" placeholder="可以把停车位置写的更详细，可以把想跟洗车员传达的信息都写在这里" v-model="textInfo">
-          </textarea>
+        <div class="infoslide textarea"  v-if="isXiche">
+          <textarea
+            cols="20"
+            rows="10"
+            class="infobg"
+            placeholder="可以把停车位置写的更详细，可以把想跟洗车员传达的信息都写在这里"
+            v-model="textInfo"
+          ></textarea>
         </div>
 
-        <div class="infoslide inputbor flex-container white pad">
+        <div class="infoslide inputbor flex-container white pad"  v-if="!isXiche">
           <div>买家留言</div>
           <input type="text" placeholder="填写内容已和卖家协商确认" class="inputmes" v-model="Remarks">
         </div>
@@ -106,13 +113,24 @@
           <span>￥{{totalPrice}}</span>
         </div>
       </div>
-      <!--底部按钮-->
-      <div class="botbtn">
-        <div class="price white">
-          合计:
-          <span>￥{{totalPrice}}</span>
+      <div class="fixed">
+      <!-- 积分抵扣 -->
+       <div class="integral">
+        <checkbox-group @change="checkboxChange">
+          <label class="checkbox flex-container">
+              使用积分抵扣(100积分抵扣1元，目前积分1354)
+            <checkbox :value="name" :checked="checked" color="#ff6325"/>
+          </label>
+        </checkbox-group>
+       </div>
+        <!--底部按钮-->
+        <div class="botbtn flex-container">
+          <div class="price white">
+            合计:
+            <span>￥{{totalPrice}}</span>
+          </div>
+          <div class="btnconfir" @click="goPay">提交订单</div>
         </div>
-        <div class="btnconfir" @click="goPay">提交订单</div>
       </div>
       <!-- 选择时间弹窗 -->
       <div class="selectTime" v-show="selectTimeStatus">
@@ -204,56 +222,6 @@ export default {
     Pay,
     upImg
   },
-  onLoad() {
-    this.setBarTitle();
-    //首次获取默认车辆的信息
-  },
-  onShow() {
-    this.initData();
-    this.Token = wx.getStorageSync("token");
-    this.UserId = wx.getStorageSync("userId");
-    this.showPay = false;
-    //获取vuex商品信息
-    this.proid = this.$store.state.visitconfirmorder.ProductId;
-    console.log(this.proid, "proid");
-    this.lat = wx.getStorageSync("latitude");
-    this.lng = wx.getStorageSync("longitude");
-    // this.Password = wx.getStorageSync("password");
-    const carInfo = wx.getStorageSync("CarInfo");
-    if (carInfo) {
-      this.CarInfoId = carInfo.Id;
-      this.CarInfo = carInfo.CarBrand + carInfo.CarType + carInfo.CarColor;
-
-      this.getTotal(); //获取订单总金额
-    } else {
-      // this.CarInfoId=wx.getStorageSync("carId")
-      this.getDefaultCar();
-    }
-    this.getOrderInfo();
-    console.log(this.proid, this.Token, this.UserId, this.CarInfoId);
-    //this.changeTime()
-    // if(this.CarInfoId){
-    //   this.getTotal()//获取订单总金额
-    // }
-  },
-  watch: {
-    CardTicketId() {
-      // if(this.CardTicketId!=='0'){
-      this.getTotal(); //获取订单总金额
-      // }
-    },
-    CouponId() {
-      let price = this.couponPrice;
-      if (this.CouponType == 1) {
-        price = "-" + price;
-      } else if (this.CouponType == 2) {
-        price = price + "折";
-      }
-      console.log(this.CouponType, "this.CouponType");
-      this.couponPrice = price;
-      this.getTotal(); //获取订单总金额
-    }
-  },
   data() {
     return {
       showPay: false,
@@ -273,6 +241,7 @@ export default {
       Token: "",
       UserId: "",
       orderNumber: "", //订单编号
+      shopId: "",
       // Password: "",
       Remarks: "",
       orderinfo: {},
@@ -297,8 +266,101 @@ export default {
       datetip: "", //选中的日期
       time: [0, 0], //时间
       nowhour: "", //当前的时间
-      addImgUrl, //上传图片按钮图片
+      addImgUrl, //上传图片按钮图片,
+      xicheProductArr: [],
+      isXiche: false,
+      // 地址
+      address: {
+        id: "",
+        name: "",
+        phone: "",
+        address: ""
+      },
     };
+  },
+  onLoad() {
+    this.setBarTitle();
+    //首次获取默认车辆的信息
+    const query = this.$root.$mp.query;
+    // 页面传参店铺id
+    if (query.shopId) {
+      this.shopId = query.shopId;
+    }
+    // 如果洗车的时候，跳转选择项目
+    if (query.type && query.type == "洗车") {
+      this.isXiche = true;
+      console.log(query.type, this.shopId, "query.type");
+      wx.navigateTo({
+        url: "/pages/servince/main?shopId=" + this.shopId
+      });
+      return false;
+    } else {
+      this.isXiche = false;
+    }
+  },
+  onShow() {
+    this.initData();
+    this.Token = wx.getStorageSync("token");
+    this.UserId = wx.getStorageSync("userId");
+    if (this.isXiche) {
+      this.xicheProductArr = [];
+      const serItem = wx.getStorageSync("serItem");
+      console.log(serItem, "选中的洗车项目");
+      // 存在选择的项目,不存在项目返回上一页
+      if (serItem && serItem.length > 0) {
+        this.xicheProductArr = serItem;
+      } else {
+        // wx.navigateBack()
+        wx.showToast({
+          title: "请选择服务项目!"
+        });
+        return false;
+      }
+    }
+    this.showPay = false;
+    //获取vuex商品信息
+    this.proid = this.$store.state.visitconfirmorder.ProductId;
+    console.log(this.proid, "proid");
+    this.lat = wx.getStorageSync("latitude");
+    this.lng = wx.getStorageSync("longitude");
+    // this.Password = wx.getStorageSync("password");
+    const carInfo = wx.getStorageSync("CarInfo");
+    if (carInfo) {
+      this.CarInfoId = carInfo.Id;
+      this.CarInfo = carInfo.CarBrand + carInfo.CarType + carInfo.CarColor;
+
+      this.getTotal(); //获取订单总金额
+    } else {
+      // this.CarInfoId=wx.getStorageSync("carId")
+      this.getDefaultCar();
+    }
+    this.getOrderInfo();
+    if(this.isXiche){
+      this.getAddress();// 获取收货地址 
+    }
+    console.log(this.proid, this.Token, this.UserId, this.CarInfoId);
+    //this.changeTime()
+    // if(this.CarInfoId){
+    //   this.getTotal()//获取订单总金额
+    // }
+  },
+  watch: {
+    CardTicketId() {
+      // if(this.CardTicketId!=='0'){
+      this.getTotal(); //获取订单总金额
+      // }
+    },
+    CouponId() {
+      let price = this.couponPrice;
+      if (this.CouponType == 1) {
+        price = "-" + price;
+      } else if (this.CouponType == 2) {
+        price = price + "折";
+      }
+      console.log(this.CouponType, "this.CouponType");
+      this.couponPrice = price;
+      this.getTotal(); //获取订单总金额
+    }
   },
   computed: {
     //计算之后的总价格
@@ -453,8 +515,52 @@ export default {
         url: "/pages/servince/main?shopId=DECACB358531C437"
       });
     },
+    // **********收货地址****************************************************
+    // 获取收货地址
+    async getAddress() {
+      this.address.id = this.$store.state.addressId;
+      // 重置store选择地址
+      this.$store.commit("setSelectAddress", {
+        url: "",
+        status: false
+      });
 
+      let res = {};
+      // 还没选中地址，拿默认地址
+      if (!this.address.id) {
+        res = await post("Address/defaultaddress_New", {
+          UserId: wx.getStorageSync("userId"),
+          Token: wx.getStorageSync("token")
+        });
+      } else {
+        // 选择地址获取选择的信息
+        res = await post("Address/GetInfo", {
+          UserId: wx.getStorageSync("userId"),
+          Token: wx.getStorageSync("token"),
+          Id: this.address.id
+        });
+      }
+      const _res = res.data;
+      this.address = {
+        id: _res.id,
+        name: _res.name,
+        phone: _res.tel,
+        address: _res.addressinfo
+      };
+    },
+    // 跳转选择收货地址
+    goSelectAddress() {
+      this.$store.commit("setSelectAddress", {
+        url: "/pages/visitconfirmorder/main",
+        status: true
+      });
+      wx.navigateTo({ url: "/pages/sitemanage/main" });
+    },
     // ********选择时间弹窗函数********************************************************
+    // 选择图片
+    upImgSuccess(e){
+      console.log(e,'图片')
+    },
     changebg(index) {
       this.active = index;
       this.datetip = this.datelist[index];
@@ -476,8 +582,8 @@ export default {
         // date++;
       }
       this.datetip = this.datelist[0];
-      this.gethous()
-      this.getMinutes()
+      this.gethous();
+      this.getMinutes();
       this.selectTimeStatus = true;
     },
     gethous() {
@@ -508,8 +614,8 @@ export default {
     },
     // 确认选择时间
     choseTimeSbumit() {
-      console.log(this.datetip,"日期")
-      console.log(this.time,"时间")
+      console.log(this.datetip, "日期");
+      console.log(this.time, "时间");
       // 未修复营业时间
       const timeStart = this.shopTime.split(" - ")[0].split(":")[0];
       const timeEnd = this.shopTime.split("-")[1].split(":")[0];

@@ -72,13 +72,25 @@
         <span>￥{{total}}</span>
       </div>
     </div>
+    
+      <div class="fixed">
+      <!-- 积分抵扣 -->
+       <div class="integral">
+        <checkbox-group @change="checkboxChange">
+          <label class="checkbox flex-container">
+              使用积分抵扣(100积分抵扣1元，目前积分1354)
+            <checkbox :value="name" :checked="checked" color="#ff6325"/>
+          </label>
+        </checkbox-group>
+       </div>
     <!--底部按钮-->
-    <div class="botbtn">
-      <div class="price white">
-        合计:
-        <span>￥{{total}}</span>
+      <div class="botbtn">
+        <div class="price white">
+          合计:
+          <span>￥{{total}}</span>
+        </div>
+        <div class="btnconfir" @click="goPay">提交订单</div>
       </div>
-      <div class="btnconfir" @click="goPay">提交订单</div>
     </div>
     <!--选择优惠券-->
     <Coupon
