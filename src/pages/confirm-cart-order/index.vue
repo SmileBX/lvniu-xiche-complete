@@ -29,7 +29,7 @@
           </div>
           <div class="inforight">
             <div class="infotitle">{{ServiceCard.ProductName}}</div>
-            <div class="infospec">{{ServiceCard.sku}}</div>
+            <div class="infospec">{{ServiceCard.ShopName}}</div>
             <div class="infoprice flex-container">
               <p>￥{{ServiceCard.SalePrice}}</p>
               <p>x{{ServiceCard.Number}}</p>
@@ -75,7 +75,7 @@
           </div>
           <div class="inforight">
             <div class="infotitle">{{ServiceItem.ProductName}}</div>
-            <div class="infospec">{{ServiceItem.sku}}</div>
+            <div class="infospec">{{ServiceItem.ShopName}}</div>
             <div class="infoprice flex-container">
               <p>￥{{ServiceItem.SalePrice}}</p>
               <p>x{{ServiceItem.Number}}</p>

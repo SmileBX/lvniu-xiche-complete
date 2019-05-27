@@ -9,11 +9,17 @@
           </div>
           <div class="flex-container clomn applypro">
             <p class="protitle">{{item.ProductName}}</p>
-            <!-- <p class="prospec">精选1年版（全国包施工）</p> -->
+            <p class="prospec">{{info.ShopName}}</p>
             <p class="proprice">¥{{item.UnitPrice}}</p>
           </div>
+          
         </div>
       </div>
+      
+          <div class="flex-container payPrice">
+            付款总额：
+            <p class="proprice">¥{{info.TotalPrice}}</p>
+          </div>
       <!--预约订单申请退款-->
       <!-- <div class="flex-container pad" v-else>
         <div>
@@ -214,5 +220,8 @@ export default {
   }
   align-items:center;
   justify-content:flex-start;
+}
+.payPrice{
+  padding:20rpx;
 }
 </style>

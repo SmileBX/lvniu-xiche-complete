@@ -53,12 +53,13 @@
               <div class="flex-container around">
                 <p class="price">￥{{item.price}}</p>
                 <!-- <div v-show="item.isAttr"> -->
-                <div v-if="item.ServiceMode!=1">
+                <!-- <div v-if="item.ServiceMode!=1"> -->
+                <div>
                   <img src="/static/images/s1.png" @click="lessNumber(item)" class="tippic">
                   <text class="nums">{{item.num}}</text>
                   <img src="/static/images/addcart.png" @click="addNumber(item)" class="tippic">
                 </div>
-                <div class="pay" v-else @click="goVisitconfirmorder(item.brandId,item.id)">立即购买</div>
+                <!-- <div class="pay" v-else @click="goVisitconfirmorder(item.brandId,item.id)">立即购买</div> -->
               </div>
             </div>
           </div>
@@ -249,8 +250,11 @@ export default {
       let carId = "";
       let num = 0;
       let status = true;
+      console.log('减号1',this.carData)
       for (let i = 0; i < this.carData.length; i += 1) {
+      console.log('减号2',this.carData[i])
         if (this.carData[i].ProductId == product.id) {
+      console.log('减号3',this.carData[i].ProductId,product.id)
           carId = this.carData[i].Id;
           num = this.carData[i].Number - 1;
           status = true;
@@ -277,12 +281,13 @@ export default {
       };
       // 数量大于0，编辑购物车
       // 数量等于0，删除购物车
+      console.log('减号',params)
       if (num !== 0) {
         await post("Cart/EditCart", params);
       } else if (num === 0) {
-        const res = await post("Cart/DelCart", params);
+        await post("Cart/DelCart", params);
         // if (res.code * 1 === 0) {
-        //   this.productlist[index].num = 0;
+          item.num = 0;
         // }
       }
       this.getCarData();
@@ -346,43 +351,74 @@ export default {
       this.carData = [];
       this.carNum = res.data.length;
       let carPrice = 0;
-      for (let i = 0; i < res.data.length; i += 1) {
-        const datas = res.data[i];
-        // this.carNum += datas.Number
-        carPrice += datas.SalePrice * datas.Number;
-        this.carData.push(datas);
-        const productlist = this.productlist;
-        for (let j = 0; j < productlist.length; j += 1) {
-          const _productlist = productlist[j];
+      this.carData=res.data;
+      // for (let i = 0; i < res.data.length; i += 1) {
+      //   const datas = res.data[i];
+      //   // this.carNum += datas.Number
+      //   carPrice += datas.SalePrice * datas.Number;
+      //   this.carData.push(datas);
+      //   const productlist = this.productlist;
+      //   // for (let j = 0; j < productlist.length; j += 1) {
+      //     this.productlist.map((_productlist,j)=>{
+            
+      //     // const _productlist = productlist[j];
+      //     _productlist.list.map((item,index)=>{
+      //         // console.log(this.productlist[j].list[index],'list')
+      //         this.productlist[j].list[index].num = 0;
+      //       if (datas.ProductId === item.id) {
+      //         // this.productlist[j].list[index].num = datas.Number;
+      //         item.num = datas.Number;
+      //         console.log(datas.Number,this.productlist[j].list[index].num,this.productlist[j].list[index],'111111111')
+      //       }else{
+      //         item.num = 0;
+      //         // console.log(datas,this.productlist[j].list[index],'000000')
+      //         // this.productlist[j].list[index].num = 0;
+      //         // this.$set(this.productlist[j].list[index],'num',0)
+      //       }
+      //     })
+      //   // }
+      //     })
+      // }
+        this.productlist.map((_productlist,j)=>{
           _productlist.list.map((item,index)=>{
-            if (datas.ProductId === item.id) {
-              this.productlist[j].list[index].num = datas.Number;
-            }else{
+            res.data.map((datas,i)=>{
+              carPrice += datas.SalePrice * datas.Number;
+              // item.num = 0;
               // this.productlist[j].list[index].num = 0;
-              this.$set(this.productlist[j].list[index],'num',0)
-              console.log(this.productlist[j].list[index])
+            if (datas.ProductId === item.id) {
+              // this.productlist[j].list[index].num = datas.Number;
+              this.$set(this.productlist[j].list[index],'num',datas.Number)
+              // item.num = datas.Number;
+              console.log(datas.Number,this.productlist[j].list[index].num,item.num,'111111111')
+            }else{
+              // item.num = 0;
+              // this.$set(this.productlist[j].list[index],'num',0)
+              // console.log(datas,this.productlist[j].list[index],'000000')
+              // this.productlist[j].list[index].num = 0;
+              // this.$set(this.productlist[j].list[index],'num',0)
             }
+            })
           })
-        }
-      }
+        // }
+          })
       this.carPrice = carPrice.toFixed(2);
     },
-    change(e) {
-      console.log(e);
-      this.active = e;
-      if (e == "服务卡券") {
-        this.servicelist = this.cardlist;
-        this.ispop = false;
-        this.comb = false;
-      } else if (e == "营销套餐") {
-        this.servicelist = this.combolist;
-        this.comb = true;
-        this.ispop = false;
-      } else {
-        this.servicelist = this.productlist;
-        this.ispop = true;
-      }
-    },
+    // change(e) {
+    //   console.log(e);
+    //   this.active = e;
+    //   if (e == "服务卡券") {
+    //     this.servicelist = this.cardlist;
+    //     this.ispop = false;
+    //     this.comb = false;
+    //   } else if (e == "营销套餐") {
+    //     this.servicelist = this.combolist;
+    //     this.comb = true;
+    //     this.ispop = false;
+    //   } else {
+    //     this.servicelist = this.productlist;
+    //     this.ispop = true;
+    //   }
+    // },
     // 跳转
     goDetail(type, id) {
       //type商品分类0--全部分类，21--服务卡券商品，22--套餐，23--卡券,24镀晶产品

@@ -2,8 +2,8 @@
   <div class="backgray">
     <div class="menuTypeBox">
       <div class="menuType">
-        <span class="item" :class="{'active':orderBigType===1}" @click="shiftOrderBigType(1)">商城订单</span>
-        <span class="item" :class="{'active':orderBigType===2}" @click="shiftOrderBigType(2)">预约订单</span>
+        <span class="item" :class="{'active':orderBigType===1}" @click="shiftOrderBigType(1)">卡券订单</span>
+        <span class="item" :class="{'active':orderBigType===2}" @click="shiftOrderBigType(2)">服务订单</span>
       </div>
     </div>
     <div class="menuContent">
@@ -69,11 +69,11 @@
                 <text class="btn active" @click="gotoAddComent(index,item.OrderNumber)">去评价</text>
               </div>-->
               <div class="menubtn flex-container flexEnd" v-if="item.StatusId===16">
-                <text class="btn active" @click="closeRefund(index,item.OrderNumber)">撤销退款</text>
+                <!-- <text class="btn active" @click="closeRefund(index,item.OrderNumber)">撤销退款</text> -->
               </div>
 
               <div class="menubtn flex-container flexEnd" v-if="item.StatusId===13">
-                <text class="btn active" @click="goRefund(index,item.OrderNumber)">申请退款</text>
+                <!-- <text class="btn active" @click="goRefund(index,item.OrderNumber)">申请退款</text> -->
                 <text class="btn" @click="btnDel(index,item.OrderNumber)">删除订单</text>
               </div>
               <!-- 已退款 、已经取消订单删除 -->
@@ -98,7 +98,7 @@
       </div>
       <!--预约订单-->
       <div v-if="orderBigType===2">
-        <div class="menuhead flex-container white visit">
+        <!--<div class="menuhead flex-container white visit">
           <div
             class="item flex1 center"
             v-for="item in visitlist"
@@ -107,13 +107,17 @@
           >
             <p class="inline-block" :class="{active:serviceMode==item.id}">{{item.name}}</p>
           </div>
-          <!-- <p
-              v-for="item in visitlist"
-              :key="item.id"
-              :class="{active:active==item.id}"
-              @click="change(item.id)"
-          >{{item.name}}</p>-->
+        </div>-->
+        <!-- 筛选订单类型 -->
+        <div class="menuhead flex-container white">
+          <p
+            v-for="item in menuStatuslist"
+            :key="item.id"
+            :class="{active:status==item.id}"
+            @click="shiftStatus(item.id)"
+          >{{item.name}}</p>
         </div>
+
         <scroll-view scroll-y class="shoplist" @scrolltolower="loadMoreOrder">
           <div class="shopitem white" v-for="(item,index) in bookList" :key="index">
             <!--*********************切换上门服务-->
@@ -193,15 +197,15 @@
               </div>
               <!-- 申请退款中 -->
               <div class="menubtn flex-container flexEnd" v-if="item.StatusId===16">
-                <text class="btn active" @click="closeRefund(index,item.OrderNumber)">撤销退款</text>
+                <!-- <text class="btn active" @click="closeRefund(index,item.OrderNumber)">撤销退款</text> -->
               </div>
               <!-- 接单中,已派发 -->
               <div class="menubtn flex-container flexEnd" v-if="item.StatusId===1">
-                <text class="btn active" @click="goRefund(index,item.OrderNumber)">申请退款</text>
+                <!-- <text class="btn active" @click="goRefund(index,item.OrderNumber)">申请退款</text> -->
                 <!-- <text class="btn active" @click="confirmService(index,item.OrderNumber)">已服务</text> -->
               </div>
               <div class="menubtn flex-container flexEnd" v-if="item.StatusId===2">
-                <text class="btn active" @click="goRefund(index,item.OrderNumber)">申请退款</text>
+                <!-- <text class="btn active" @click="goRefund(index,item.OrderNumber)">申请退款</text> -->
                 <text class="btn active" @click="confirmService(index,item.OrderNumber)">已服务</text>
               </div>
               <!-- 已收货，已服务** -->
@@ -292,11 +296,20 @@ export default {
       menulist: [
         { id: 0, name: "全部" },
         { id: 1, name: "待付款" },
-        // { id: 2, name: "待使用" },
+        { id: 2, name: "待发放" },
         // { id: 3, name: "待评价" },
         { id: 4, name: "已完成" },
         { id: 3, name: "已取消" },
-        { id: 2, name: "退款" }
+        // { id: 2, name: "退款" }
+      ],
+      menuStatuslist: [
+        { id: 0, name: "全部" },
+        { id: 1, name: "待付款" },
+        // { id: 2, name: "待使用" },
+        { id: 2, name: "待服务" },
+        { id: 5, name: "待评价" },
+        { id: 3, name: "已取消" },
+        // { id: 2, name: "退款" }
       ],
       visitlist: [{ id: 1, name: "上门服务" }, { id: 2, name: "到店服务" }],
       orderList: [],
@@ -388,7 +401,14 @@ export default {
       //console.log(e)
       this.initData();
       this.serviceMode = e;
-      this.getReserveOrderList();
+      // 商城订单
+      if(this.orderBigType==1){
+        this.getReserveOrderList();
+      }
+      // 预约订单
+      if(this.orderBigType==2){
+        this.getReserveOrderList();
+      }
     },
     toOrderDetail(e, orderNo) {
       if (e == 1) {
@@ -478,6 +498,7 @@ export default {
         console.log(this.orderList, "订单列表");
       }
     },
+    // 商场订单列表
     async getReserveOrderList() {
       if(this.isOved||this.hasData){
         return false;

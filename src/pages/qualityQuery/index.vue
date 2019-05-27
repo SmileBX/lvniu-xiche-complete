@@ -27,17 +27,17 @@
         </div>
         <div class="result">验证结果：</div>
         <div class="resultinfo white" v-show="checkInput">{{checkInput}}</div>
-        <div class="orderNo">订单编号：546413222226545879321</div>
-        <div class="proinfo flex-container pad">
+        <div class="orderNo" v-if="order.orderid">订单编号：{{order.orderid}}</div>
+        <div class="proinfo flex-container pad" v-if="order.orderid">
           <div >
-            <img :src="img" class="orderimg">
+            <img :src="order.PicNo" class="orderimg">
           </div>
           <div class="inforight">
-            <div class="infotitle" >镀晶产品</div>
-            <div class="infospec">白色 大码</div>
+            <div class="infotitle" >{{order.productName}}</div>
+            <div class="infospec">{{order.shopName}}</div>
             <div class="infoprice flex-center">
-              <p class="price">￥111</p>
-              <p >x2</p>
+              <p class="price">￥{{order.unitPrice}}</p>
+              <p >x{{order.number}}</p>
             </div>
           </div>
         </div> 
@@ -85,7 +85,8 @@ export default {
         checkInput:'',
         orderDetail:{
           
-        }
+        },
+        order:{}
     }
   },
 
@@ -100,12 +101,13 @@ export default {
         title: "防伪质保查询"
       });
     },
-    async securityCheckWarranty(){
+    securityCheckWarranty(){
         if(this.inputTxt){
-          let result = await post("Server/SecurityCheckWarranty",{
+          post("Server/SecurityCheckWarranty",{
             WarrantyNumber:this.inputTxt
           }).then(res=>{
             this.checkInput =`恭喜你！${this.inputTxt}是正品！`
+            this.order = res.data[0]
           }).catch(err=>{
             this.checkInput =`很遗憾！没有查询到${this.inputTxt}！`
           })

@@ -108,10 +108,10 @@
           <input type="text" placeholder="填写内容已和卖家协商确认" class="inputmes" v-model="Remarks">
         </div>
 
-        <div class="infoslide slideprice white pad">
+        <!-- <div class="infoslide slideprice white pad">
           合计：
           <span>￥{{totalPrice}}</span>
-        </div>
+        </div> -->
       </div>
       <div class="fixed">
       <!-- 积分抵扣 -->

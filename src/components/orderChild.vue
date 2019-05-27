@@ -5,7 +5,7 @@
     </div>
     <div class="inforight">
       <div class="infotitle" @click="goDetail">{{data.title}}</div>
-      <div class="infospec">{{data.sku}}</div>
+      <div class="infospec">{{data.shopName}}</div>
       <div class="infoprice flex-container  flex-right">
         <p class="price">￥{{price}}</p>
         <p v-if="showButton">x{{data.num}}</p>
