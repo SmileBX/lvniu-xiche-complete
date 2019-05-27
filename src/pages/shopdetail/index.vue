@@ -429,7 +429,7 @@ export default {
     setMapMask(){
       // 获取定位
       wx.getLocation({
-        type: "wgs84",
+        type: "gcj02",
         success: res => {
           this.$store.commit('update',{
             latitude:res.latitude,

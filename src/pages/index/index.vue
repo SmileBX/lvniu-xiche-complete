@@ -167,7 +167,6 @@
 import { get, myget, mypost, post, toLogin } from "../../utils";
 import amapFile from "../../utils/amap-wx"; //高德地图API调用JS SDK
 import { mapState, mapMutations } from "vuex"; //vuex辅助函数
-import { transformFromGCJToWGS } from "@/utils/WSCoordinate"; //将gcj02坐标转wgs84
 import QQMapWX from "@/utils/qqmap-wx-jssdk"; //腾讯地图，reverseGeocoder逆地址转码
 import "../../css/common.css";
 import "../../css/global.css";
@@ -297,7 +296,7 @@ export default {
     getMyPosition() {
       return new Promise((resolved, rejected) => {
         wx.getLocation({
-          type: "wgs84",
+          type: "gcj02",
           success: data => {
             // console.log(data,"微信地图")
             this.latitude = data.latitude;

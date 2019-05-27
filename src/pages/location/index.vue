@@ -402,7 +402,7 @@ export default {
     getMapInfo() {
       const that = this;
       wx.getLocation({
-        type: "wgs84",
+        type: "gcj02",
         success: data => {
           // console.log(data,"微信地图")
           that.latitude = data.latitude;

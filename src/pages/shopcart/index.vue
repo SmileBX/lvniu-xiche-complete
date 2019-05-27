@@ -136,7 +136,7 @@ export default {
     
       // 获取定位
       wx.getLocation({
-        type: "wgs84",
+        type: "gcj02",
         success: res => {
           this.latitude = res.latitude;
           this.longitude = res.longitude;
