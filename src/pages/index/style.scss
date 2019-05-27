@@ -2,18 +2,19 @@
 .location{
     position:relative;
 }
+// 地图中心点
 .centerImg{
     position:absolute;
     top:43vh;
-    left:347rpx;
+    left:337rpx;
     width:70rpx;
     height:auto;
 }
 .backMyPosition{
     position:absolute;
-    top:50vh;
+    top:55vh;
     left:0;
-    width:60rpx;
+    width:80rpx;
     height:auto;
     border-radius:50%;
 }
@@ -128,13 +129,13 @@
 }
 .modal-xiche{
     width:702rpx;
-    height:320rpx;
+    // height:320rpx;
     background:#fff;
     position:fixed;
-    bottom:36rpx;
+    bottom:10rpx;
     left:25rpx;
     z-index:10;
-    padding:30rpx 0;
+    padding:10rpx 0 30rpx;
     box-sizing: border-box;
     border-radius:20rpx;
 }
@@ -146,6 +147,9 @@
 .line{
     border-bottom:1rpx solid #eee;
     padding:20rpx;
+    margin-bottom:0;
+}
+.mb20{
     margin-bottom:20rpx;
 }
 .wash{

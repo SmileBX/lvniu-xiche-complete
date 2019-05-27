@@ -164,7 +164,7 @@ export default {
       this.searchValue = e.mp.detail
       this.qqmapsdk.getSuggestion({
         keyword:e.mp.detail,
-        page_size:15,
+        page_size:20,
         get_subpois:1,
         success(res){
            console.log('输入关键词提示',res)
@@ -206,7 +206,7 @@ export default {
             latitude: this.latitude,
             longitude: this.longitude
           },
-          page_size:20,
+          page_size:10,
           success(res) {
             console.log("地址转码成功", res);
            let list =[]
@@ -244,7 +244,7 @@ export default {
         });
     },
     change: function(item,index) {
-      this.active = index;
+      // this.active = index;
       this.latitude=item.location.lat
       this.longitude=item.location.lng
       console.log(item, "点击选中的位置");

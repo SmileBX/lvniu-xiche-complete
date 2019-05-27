@@ -191,11 +191,12 @@ export default {
     }
     console.log(this.shopid,this.isVisit ,"详情页接收");
   },
-  onShow() {
+  async onShow() {
     this.Token = wx.getStorageSync("token");
     this.UserId = wx.getStorageSync("userId");
-    this.lat = this.$store.state.latitude;
-    this.lng = this.$store.state.longitude;
+    await this.getMyPosition()
+    // this.lat = this.$store.state.latitude;
+    // this.lng = this.$store.state.longitude;
     this.servincelist = [];
     this.meallist = [];
     this.commonlist = [];
@@ -206,7 +207,7 @@ export default {
     this.pointshow = false;
     this.isOved = false;
     this.isServiceOved = false;
-    this.Page = "1";
+    this.Page = 1;
     this.typeid = 0;
     this.active = "服务";
     this.setBarTitle();
@@ -228,6 +229,28 @@ export default {
       }
       wx.setNavigationBarTitle({
         title
+      });
+    },
+    
+    // 获取定位
+    getMyPosition() {
+      return new Promise((resolved, rejected) => {
+        wx.getLocation({
+          type: "gcj02",
+          success: data => {
+            // console.log(data,"微信地图")
+            this.lat = data.latitude;
+            this.lng = data.longitude;
+            // 根据坐标获取城市信息
+              resolved();
+          },
+          fail(){
+            wx.showToast({
+              title:'获取定位失败！请重新尝试',
+              icon:'none'
+            })
+          }
+        });
       });
     },
     async getShopDetail() {
@@ -387,7 +410,7 @@ export default {
     async change(e) {
       console.log(e);
       this.active = e;
-      this.Page = "1";
+      this.Page = 1;
       this.isOved=false;
       if (e == "服务") {
         (this.sershow = true),

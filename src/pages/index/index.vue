@@ -110,7 +110,7 @@
           <!-- 更改地图位置，搜索位置 -->
           <cover-image src="/static/images/back.png" style="width:12rpx;height:22rpx;padding-left:10rpx;" />
         </cover-view>
-        <cover-view class="line flex-container">
+        <cover-view class="line flex-container mb20">
           <cover-view class="flex-container">
             <cover-image src="/static/images/yellow.png" class="diandian"/>
             <cover-view class="location-self">{{shopInfo.name||'周边无可服务商户!'}}</cover-view>
@@ -165,7 +165,7 @@
 
 <script>
 import { get, myget, mypost, post, toLogin } from "../../utils";
-import amapFile from "../../utils/amap-wx"; //高德地图API调用JS SDK
+// import amapFile from "../../utils/amap-wx"; //高德地图API调用JS SDK
 import { mapState, mapMutations } from "vuex"; //vuex辅助函数
 import QQMapWX from "@/utils/qqmap-wx-jssdk"; //腾讯地图，reverseGeocoder逆地址转码
 import "../../css/common.css";
@@ -310,11 +310,11 @@ export default {
               resolved();
             });
           },
-          fail() {
-            //失败回调
-            //如果用户拒绝授权,默认为北京
-            this.cityName = "北京市";
-            this.update({ cityName: "北京市" });
+          fail(err){
+            wx.showToast({
+              title:'获取定位失败！请重新尝试',
+              icon:'none'
+            })
           }
         });
       });
