@@ -122,8 +122,10 @@ export default {
       });
     },
     async getMenulist() {
-      var result = await post("/Server/GetCarWash", {
-        BrandList: 21
+      // 洗车分类  0:默认全部 
+      // 21:服务项目 22:服务套餐23:服务卡券 24:镀晶版本
+      var result = await post("Server/GetCarWash", {
+        BrandList: 0
       });
       //console.log(result)
       if (result.code == 0) {
@@ -136,9 +138,12 @@ export default {
       }
     },
     //获取产品列表
-    getProlist() {
+    async getProlist() {
       let arr = [];
-      this.menulist.map(async (item, index) => {
+      // this.menulist.map(async (item, index) => {
+        for(let i=0;i<this.menulist.length;i+=1){
+          const item = this.menulist[i]
+        // }
         let res = await post("Server/ChooseServiceProducts", {
           Page: this.Page,
           PageSize: this.PageSize,
@@ -155,21 +160,22 @@ export default {
             TypeName: item.TypeName,
             list: res.data
           });
-          if (index === this.menulist.length - 1) {
-            this.checkedSelectArr();
-          }
         }
-      });
+      }
+          // if (index === this.menulist.length - 1) {
+          // }
       this.servicelist = arr;
-      console.log("item", this.servicelist);
+            this.checkedSelectArr();
     },
     // 查找是否满足已选择条件
     checkedSelectArr() {
-      this.servicelist.map(list => {
+      this.servicelist.map(servicelist => {
+        servicelist.list.map(list=>{
         this.selectArr.map(arr => {
           if (list.Id === arr.Id) {
             list.isSelect = true;
           }
+        })
         });
       });
     },

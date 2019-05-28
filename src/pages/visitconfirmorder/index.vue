@@ -11,12 +11,12 @@
             <p>{{orderinfo.ShopData.Address}}</p>
           </div>
         </div>
-        <div class="ordertips" v-if="!isXiche">(温馨提示：请直接至门店进行洗车服务)</div>
+        <div class="ordertips" >(温馨提示：请直接至门店进行洗车服务)</div>
       </div>
       <div class="slide"></div>
       <!-- 服务地址 -->
-      <div class="flex-container clomn orderhead white" v-if="isXiche" @click="goSelectAddress">
-        <div class="orderserve">服务地址</div>
+      <div class="flex-container clomn orderhead white" @click="goSelectAddress">
+        <div class="orderserve">联系地址</div>
         <div class="orderuser">
           <p>联系人：{{address.name}}</p>
           <p>{{address.phone}}</p>
@@ -37,13 +37,6 @@
           <div class="flex-container clomn orderplace">
             <p class="placename detailright">{{orderinfo.Name}}</p>
             <p>￥{{orderinfo.Price}}</p>
-          </div>
-        </div>
-        <!-- 上门订单 -->
-        <div class="flex-container infoslide white pad" @click="selectItem"  v-if="isXiche">
-          <div>增加服务项目</div>
-          <div>
-            <img src="/static/images/back.png" class="right">
           </div>
         </div>
         
@@ -78,32 +71,8 @@
           </div>
         </div>
 
-        <!-- 上门订单 -->
-        <div class="flex-container infoslide white pad inputbor"  v-if="!isXiche">
-          <div>联系人</div>
-          <input type="text" placeholder="填写联系人" class="inputmes" v-model="Remarks">
-        </div>
-        <div class="flex-container infoslide white pad inputbor"  v-if="!isXiche">
-          <div>联系电话</div>
-          <input type="text" placeholder="填写联系电话" class="inputmes" v-model="Remarks">
-        </div>
-        <div class="ml-20"  v-if="isXiche">
-          <upImg title="添加现场照片" :imgLenght="8" :addImgUrl="addImgUrl" @upImgs="upImgSuccess"></upImg>
-        </div>
-        <div class="inputbor flex-container white pad bt-eee"  v-if="isXiche">
-          <div>备注信息</div>
-        </div>
-        <div class="infoslide textarea"  v-if="isXiche">
-          <textarea
-            cols="20"
-            rows="10"
-            class="infobg"
-            placeholder="可以把停车位置写的更详细，可以把想跟洗车员传达的信息都写在这里"
-            v-model="textInfo"
-          ></textarea>
-        </div>
 
-        <div class="infoslide inputbor flex-container white pad"  v-if="!isXiche">
+        <div class="infoslide inputbor flex-container white pad">
           <div>买家留言</div>
           <input type="text" placeholder="填写内容已和卖家协商确认" class="inputmes" v-model="Remarks">
         </div>
@@ -256,19 +225,17 @@ export default {
       ],
       showCoupon: false, //组件
       showCardTicket: false,
-      totalPrice: "", //总价格
       selectTimeStatus: false, //选择时间状态
       datelist: [],
       active: 0,
       hourses: [],
       minutes: [],
       shopTime: "", //商铺的营业时间
+      totalPrice: "", //总价格
+      shopTime: "", //商铺的营业时间
       datetip: "", //选中的日期
       time: [0,0], //时间
       nowhour: "", //当前的时间
-      addImgUrl, //上传图片按钮图片,
-      xicheProductArr: [],
-      isXiche: false,
       // 地址
       address: {
         id: "",
@@ -287,51 +254,19 @@ export default {
     if (query.shopId) {
       this.shopId = query.shopId;
     }
-    // 如果洗车的时候，跳转选择项目
-    if (query.type && query.type == "洗车") {
-      this.isXiche = true;
-      console.log(query.type, this.shopId, "query.type");
-      wx.navigateTo({
-        url: "/pages/servince/main?shopId=" + this.shopId
-      });
-      return false;
-    } else {
-      this.isXiche = false;
-    }
   },
   onShow() {
     this.initData();
     this.choosedate()
     this.Token = wx.getStorageSync("token");
     this.UserId = wx.getStorageSync("userId");
-    // 洗车下单
-    if (this.isXiche) {
-      this.xicheProductArr = [];
-      const serItem = wx.getStorageSync("serItem");
-      console.log(serItem, "选中的洗车项目");
-      
-      // 存在选择的项目,不存在项目返回上一页
-      if (serItem && serItem.length > 0) {
-        this.xicheProductArr = serItem;
-        // 获取订单信息
-        this.getXicheOrder();
-      } else {
-        // wx.navigateBack()
-        wx.showToast({
-          title: "请选择服务项目!"
-        });
-        return false;
-      }
-    }else{
-      // 到店**************
-    // 获取订单信息
-    this.getOrderInfo();
-    }
 
     this.getAddress();// 获取收货地址 
     this.showPay = false;
     //获取vuex商品信息
     this.proid = this.$store.state.visitconfirmorder.ProductId;
+    // 获取订单信息
+    this.getOrderInfo();
     console.log(this.proid, "proid");
     // this.lat = wx.getStorageSync("latitude");
     // this.lng = wx.getStorageSync("longitude");
@@ -425,19 +360,6 @@ export default {
         this.totalPrice = result.data[0].Price;
         console.log(this.orderinfo.ShopData, "确认页面详情");
       }
-    },
-    // 获取洗车订单
-    async getXicheOrder(){
-      let proId =[];
-      this.xicheProductArr.map(item=>{
-        proId.push(item.Id)
-      })
-      console.log(proId.join(','),'join')
-      const result = await post("Order/DoorProductsFirmOrder", {
-        UserId: this.UserId,
-        Token: this.Token,
-        ProductList: proId.join(',')
-      });
     },
     choseItem(e) {
       if (e == 1) {

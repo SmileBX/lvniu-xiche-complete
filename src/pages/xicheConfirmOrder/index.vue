@@ -4,18 +4,18 @@
       <!--服务商家-->
       <div class="flex-container clomn ordershophead white">
         <div class="orderserve">服务商家</div>
-        <div class="flex-container ordermain" v-if="orderinfo.ShopData">
-          <img :src="orderinfo.ShopData.Logo" class="ordershopimg">
+        <div class="flex-container" v-if="ShopData">
+          <img :src="ShopData.Logo" class="ordershopimg">
           <div class="flex-container clomn orderplace">
-            <p class="placename">{{orderinfo.ShopData.ShopNick}}</p>
-            <p>{{orderinfo.ShopData.Address}}</p>
+            <p class="placename">{{ShopData.ShopNick}}</p>
+            <p>{{ShopData.Address}}</p>
           </div>
         </div>
-        <div class="ordertips" v-if="!isXiche">(温馨提示：请直接至门店进行洗车服务)</div>
+        <div class="ordertips">(温馨提示：请直接至门店进行洗车服务)</div>
       </div>
       <div class="slide"></div>
       <!-- 服务地址 -->
-      <div class="flex-container clomn orderhead white" v-if="isXiche" @click="goSelectAddress">
+      <div class="flex-container clomn orderhead white" @click="goSelectAddress">
         <div class="orderserve">服务地址</div>
         <div class="orderuser">
           <p>联系人：{{address.name}}</p>
@@ -32,15 +32,16 @@
       <!--订单详情-->
       <div class="white proinfo">
         <div class="orderserve">服务项目</div>
-        <div class="flex-container ordermain">
-          <img :src="orderinfo.PicNo" class="ordershopimg">
+        <div class="flex-container ordermain" 
+        v-for="(productItem,productIndex) in xicheProductArr" :key="productIndex">
+          <img :src="productItem.PicNo" class="ordershopimg">
           <div class="flex-container clomn orderplace">
-            <p class="placename detailright">{{orderinfo.Name}}</p>
-            <p>￥{{orderinfo.Price}}</p>
+            <p class="placename detailright">{{productItem.Name}}</p>
+            <p>￥{{productItem.Price}}</p>
           </div>
         </div>
         <!-- 上门订单 -->
-        <div class="flex-container infoslide white pad" @click="selectItem"  v-if="isXiche">
+        <div class="flex-container infoslide white pad" @click="selectItem" >
           <div>增加服务项目</div>
           <div>
             <img src="/static/images/back.png" class="right">
@@ -50,7 +51,8 @@
         <div class="flex-container infoslide white pad" @click="selectTimeStatus = true;">
           <div>预约服务时间</div>
           <div>
-            <img src="/static/images/back.png" class="right">
+            <span v-if="timeItem">{{timeItem}}</span>
+            <img v-else src="/static/images/back.png" class="right">
           </div>
         </div>
         <div class="flex-container infoslide white pad" @click="choseItem(1)">
@@ -77,23 +79,13 @@
             <img src="/static/images/back.png" class="right" v-else>
           </div>
         </div>
-
-        <!-- 上门订单 -->
-        <div class="flex-container infoslide white pad inputbor"  v-if="!isXiche">
-          <div>联系人</div>
-          <input type="text" placeholder="填写联系人" class="inputmes" v-model="Remarks">
-        </div>
-        <div class="flex-container infoslide white pad inputbor"  v-if="!isXiche">
-          <div>联系电话</div>
-          <input type="text" placeholder="填写联系电话" class="inputmes" v-model="Remarks">
-        </div>
-        <div class="ml-20"  v-if="isXiche">
+        <div class="ml-20" >
           <upImg title="添加现场照片" :imgLenght="8" :addImgUrl="addImgUrl" @upImgs="upImgSuccess"></upImg>
         </div>
-        <div class="inputbor flex-container white pad bt-eee"  v-if="isXiche">
+        <div class="inputbor flex-container white pad bt-eee" >
           <div>备注信息</div>
         </div>
-        <div class="infoslide textarea"  v-if="isXiche">
+        <div class="infoslide textarea" >
           <textarea
             cols="20"
             rows="10"
@@ -102,16 +94,6 @@
             v-model="textInfo"
           ></textarea>
         </div>
-
-        <div class="infoslide inputbor flex-container white pad"  v-if="!isXiche">
-          <div>买家留言</div>
-          <input type="text" placeholder="填写内容已和卖家协商确认" class="inputmes" v-model="Remarks">
-        </div>
-
-        <!-- <div class="infoslide slideprice white pad">
-          合计：
-          <span>￥{{totalPrice}}</span>
-        </div> -->
       </div>
       <div class="fixed">
       <!-- 积分抵扣 -->
@@ -232,7 +214,7 @@ export default {
       proid: "", //产品id
       CarInfoId: "", //车辆id
       CarInfo: "",
-      CouponId: "0", //优惠券id
+      CouponId: "", //优惠券id
       CouponType: "", //优惠券id
       CardTicketId: "0", //服务卡券id
       couponPrice: "0.00",
@@ -245,6 +227,7 @@ export default {
       // Password: "",
       Remarks: "",
       orderinfo: {},
+      ShopData:{},
       orderParmar: "", ////////////
       minute: 10,
       second: "00",
@@ -267,6 +250,7 @@ export default {
       time: [0,0], //时间
       nowhour: "", //当前的时间
       addImgUrl, //上传图片按钮图片,
+      timeItem:'',
       xicheProductArr: [],
       isXiche: false,
       // 地址
@@ -289,14 +273,11 @@ export default {
     }
     // 如果洗车的时候，跳转选择项目
     if (query.type && query.type == "洗车") {
-      this.isXiche = true;
       console.log(query.type, this.shopId, "query.type");
       wx.navigateTo({
         url: "/pages/servince/main?shopId=" + this.shopId
       });
       return false;
-    } else {
-      this.isXiche = false;
     }
   },
   onShow() {
@@ -305,7 +286,6 @@ export default {
     this.Token = wx.getStorageSync("token");
     this.UserId = wx.getStorageSync("userId");
     // 洗车下单
-    if (this.isXiche) {
       this.xicheProductArr = [];
       const serItem = wx.getStorageSync("serItem");
       console.log(serItem, "选中的洗车项目");
@@ -322,27 +302,22 @@ export default {
         });
         return false;
       }
-    }else{
-      // 到店**************
-    // 获取订单信息
-    this.getOrderInfo();
-    }
 
     this.getAddress();// 获取收货地址 
     this.showPay = false;
     //获取vuex商品信息
     this.proid = this.$store.state.visitconfirmorder.ProductId;
-    console.log(this.proid, "proid");
     // this.lat = wx.getStorageSync("latitude");
     // this.lng = wx.getStorageSync("longitude");
     // this.Password = wx.getStorageSync("password");
     const carInfo = wx.getStorageSync("CarInfo");
+    console.log(carInfo, "carInfo");
     // 车辆信息
     if (carInfo) {
       this.CarInfoId = carInfo.Id;
-      this.CarInfo = carInfo.CarBrand + carInfo.CarType + carInfo.CarColor;
+      this.CarInfo = carInfo.CarBrand +'-'+ carInfo.CarType +'-'+ carInfo.CarColor;
 
-      this.getTotal(); //获取订单总金额
+      // this.getTotal(); //获取订单总金额
     } else {
       // this.CarInfoId=wx.getStorageSync("carId")
       this.getDefaultCar();
@@ -356,7 +331,7 @@ export default {
   watch: {
     CardTicketId() {
       // if(this.CardTicketId!=='0'){
-      this.getTotal(); //获取订单总金额
+      // this.getTotal(); //获取订单总金额
       // }
     },
     CouponId() {
@@ -391,6 +366,7 @@ export default {
     initData() {
       this.CardTicketId = "0"; //服务卡券id
       this.CardTicketName = "";
+      this.ShopData={}
       // this.CardTicketPrice = "0.00";
       this.CouponId = "0"; //优惠券id
       this.couponPrice = "0.00";
@@ -410,22 +386,6 @@ export default {
       this.CarInfo = _res.CarBrand + _res.CarType + _res.CarMumber;
       this.getTotal(); //获取订单总金额
     },
-    //获取到店订单信息
-    async getOrderInfo() {
-      const result = await post("/Order/ServiceProductsFirmOrder", {
-        UserId: this.UserId,
-        Token: this.Token,
-        ProductId: this.proid
-      });
-      if (result.code == 0) {
-        this.orderinfo = result.data[0];
-        this.orderinfo.ShopData = result.data[0].ShopData[0];
-        this.CouponData = result.data[0].CouponData;
-        this.CardTicketData = result.data[0].CardTicketData;
-        this.totalPrice = result.data[0].Price;
-        console.log(this.orderinfo.ShopData, "确认页面详情");
-      }
-    },
     // 获取洗车订单
     async getXicheOrder(){
       let proId =[];
@@ -438,6 +398,14 @@ export default {
         Token: this.Token,
         ProductList: proId.join(',')
       });
+      if (result.code == 0) {
+        this.orderinfo = result.data;
+        this.ShopData = result.data.Data[0].ShopData[0];
+        this.CouponData = result.data.CouponData;
+        this.CardTicketData = result.data.CardTicketData;
+        // this.totalPrice = result.data.Price;
+        console.log(this.orderinfo.ShopData,this.ShopDadta, "确认页面详情");
+      }
     },
     choseItem(e) {
       if (e == 1) {
@@ -629,9 +597,10 @@ export default {
     },
     // 更改时间
     bindDateChangeStart(e) {
-      console.log(e.mp.detail,'e.mp.detail')
       // valIndex 是获取到的年月日在各自集合中的下标
       this.time = e.mp.detail.value;
+      // this.time[1] = this.minutes[e.mp.detail.value[1]]
+      // console.log(this.time,'e.mp.detail')
       // console.log(JSON.stringify(e.mp.detail.value))
       // let hourses = this.hourses[valIndex[0]]
       // let minutes = this.minutes[valIndex[1]]
@@ -642,17 +611,22 @@ export default {
       console.log(this.datetip, "日期");
       console.log(this.time, "时间");
       // 未修复营业时间
-      const timeStart = this.shopTime.split(" - ")[0].split(":")[0];
-      const timeEnd = this.shopTime.split("-")[1].split(":")[0];
+      // const timeStart = this.shopTime.split(" - ")[0].split(":")[0];
+      // const timeEnd = this.shopTime.split("-")[1].split(":")[0];
       // console.log(timeStart, timeEnd, this.time, "营业时间");
       // console.log(this.datelist, this.datetip.replace(/月/g, "-"), "日期");
       let datetip = this.datetip;
-      datetip = datetip.replace(/月/g, "-");
-      datetip = datetip.replace(/日/g, " ");
-      // console.log(this.time, "月份");
+      let dateArr =[]
+      dateArr = datetip.split('月')
+      console.log('dateArr',dateArr)
+      dateArr[1] = dateArr[1].replace(/日/g,'')
+      // datetip = datetip.replace(/月/g, "-");
+      // datetip = datetip.replace(/日/g, " ");
       const year = new Date().getFullYear();
       let time = [];
-      this.time.map(t => {
+      let timeArr = this.time
+      timeArr[1] = this.minutes[this.time[1]]
+      timeArr.map(t => {
         let ts = "";
         if (String(t).length === 1) {
           ts = "0" + t;
@@ -661,12 +635,25 @@ export default {
         }
         time.push(ts);
       });
-      const timeItem = year + "-" + datetip + time[0] + ":" + time[1] + ":00";
-      const timeItem2 = year + "-" + datetip + time[2] + ":" + time[3] + ":00";
-      // console.log("time", timeItem, timeItem2);
+      // 默认预约2小时
+      let timeEnd = (time[0]*1)+2
+      let dateEnd = dateArr[1]
+      console.log(datetip[datetip.length-2], "datetip[datetip.length-2]");
+      if(time[0]>21){
+        dateEnd =(dateEnd*1)+1 
+        }
+        if(timeEnd===24){
+          timeEnd ='00'
+        }else if(timeEnd===25){
+          timeEnd ='01'
+        }
+      const timeItem = year + "-" + dateArr[0] +'-'+dateArr[1]+' ' + time[0] + ":" + time[1] + ":00";
+      this.timeItem = timeItem;
+      const timeItem2 = year + "-" + dateArr[0] +'-'+dateEnd+' ' + timeEnd + ":" + time[1] + ":00";
+      console.log("time", timeItem, timeItem2);
       post("Order/CheckMakeTime", {
-        WorkWeek: this.shopInfo.WorkWeek,
-        WorkTime: this.shopInfo.WorkTime,
+        WorkWeek: this.ShopData.WorkWeek,
+        WorkTime: this.ShopData.WorkTime,
         AppointmentStartTime: timeItem,
         AppointmentEndTime: timeItem2
       })

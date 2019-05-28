@@ -584,13 +584,13 @@ export default {
         this.showShop = true;
         return false;
       }
-      wx.setStorageSync("serItem",[]);
       // wx.setStorageSync("shopInfo", this.shopInfo);
       // console.log(this.shopInfo, this.shopId, "跳转我要洗车");
       // this.$store.commit('update',{
       //   visitconfirmorder:{ProductId:this.shopInfo.id}
       // })
-      wx.navigateTo({ url: `/pages/visitconfirmorder/main?shopId=${this.shopInfo.id}&type=洗车` });
+      wx.setStorageSync("serItem",[]);
+      wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${this.shopInfo.id}&type=洗车` });
       // this.toShopdet(this.shopInfo.id,1)
       
     },
