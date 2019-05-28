@@ -18,6 +18,7 @@
     "pages/certical/main",
     "pages/confirmorder/main",
     "pages/visitconfirmorder/main",
+    "pages/xicheConfirmOrder/main",
     "pages/coupondetail/main",
     "pages/coupons/main",
     "pages/city/main",

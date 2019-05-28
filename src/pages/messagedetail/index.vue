@@ -9,7 +9,8 @@
       <div class="content" v-html="info.ContentDetails"></div>
       <div class="btnset flex-container">
           <div class="flex-container" @click="btnOperation">
-              <img src="/static/images/zan.png" class="zan">
+              <img v-if="!isok" src="/static/images/zan.png" class="zan">
+              <img v-else src="/static/images/zan2.png" class="zan">
               <text>{{info.LikeNum}}</text>
           </div>
           <button class="flex-container btn" open-type="share">
@@ -42,7 +43,8 @@ export default {
       info:{},
       time:"",
       hasData:false,
-      curPage: ""
+      curPage: "",
+      isok:false,
     }
   },
  
@@ -70,6 +72,7 @@ export default {
       });
 
       this.info = result.data[0];
+      // this.isok = result.isok
       this.time = this.info.Addtime.split("T").join(" ");
       this.hasData = true;
     },
@@ -92,6 +95,7 @@ export default {
       }
     },
     async findlikeOperation(){
+      const that =this;
       let result = await post("News/FindlikeOperation",{
         UserId:this.userId,
         Token:this.token,
@@ -107,6 +111,7 @@ export default {
             icon: "none",
             duration: 1000,
             success:function(){
+             that.isok = false
               _this.$set(_this.info,"LikeNum",num);
               _this.$set(_this.info,"likeNum",0);
               return false;
@@ -120,6 +125,7 @@ export default {
             icon: "none",
             duration: 1000,
             success:function(){
+             that.isok = true
               _this.$set(_this.info,"LikeNum",num);
               _this.$set(_this.info,"likeNum",1);
               return false;
