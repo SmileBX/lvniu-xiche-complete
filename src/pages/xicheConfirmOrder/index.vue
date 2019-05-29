@@ -279,6 +279,7 @@ export default {
     const query = this.$root.$mp.query;
     this.latitude = this.$store.state.latitude;
     this.longitude = this.$store.state.longitude;
+    this.textInfo=''
     // 页面传参店铺id
     if (query.shopId) {
       this.shopId = query.shopId;
@@ -480,7 +481,8 @@ export default {
           Lng:this.longitude,
           PicList:JSON.stringify(imgArr),
           AppointmentStartTime:this.AppointmentStartTime,
-          AppointmentEndTime:this.AppointmentEndTime
+          AppointmentEndTime:this.AppointmentEndTime,
+          ScoreId:this.scoreStatus?1:0
         });
         console.log(result, "发起支付请求");
         this.orderNumber = result.data;
