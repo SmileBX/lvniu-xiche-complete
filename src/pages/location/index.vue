@@ -597,7 +597,7 @@ export default {
     upDateImg() {
       return new Promise((resolved, rejected) => {
         const imgBase = [];
-        if (this.PicList < 1) {
+        if (this.PicList.length < 1) {
           resolved(imgBase);
         }
         for (let i = 0; i < this.PicList.length; i += 1) {

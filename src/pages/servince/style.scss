@@ -75,7 +75,7 @@
     display: inline-block;
     width:50%;
     box-sizing: border-box;
-    height:89rpx;
+    // height:89rpx;
     font-size: 32rpx;
     line-height:89rpx;
 }
@@ -89,6 +89,9 @@
 .btn-close{
     border-top:1rpx solid #eee;
     padding-left:30rpx;
+}
+.bt1{
+    border-top:1rpx solid #eee;
 }
 .btn-confirm{
     text-align: center;

@@ -60,15 +60,15 @@
 
     </scroll-view>
       <!--底部按钮-->
-      <div class="btn">
-        <div class="btn-close" style="background:#fff">
-          <input
+      <div class="btn bt1"  style="background:#fff">
+        <div class="btn-close">
+          <!-- <input
             type="checkbox"
             class="checkbox-cart"
             @click="selectProduct()"
             :checked="isSelectAll"
           >
-          <text>全选</text>
+          <text>全选</text> -->
         </div>
         <div class="btn-confirm" @click="submit">确定</div>
       </div>

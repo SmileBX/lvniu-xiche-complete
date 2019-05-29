@@ -99,7 +99,7 @@ export default {
             });
             // 最后一张图片时，返回数据
             if(this.imgBase.length===this.imgPathArr.length){
-            this.$emit("upImgs", this.imgBase);
+            this.$emit("upImgs", this.imgBase,this.imgPathArr);
             }
           }
         });

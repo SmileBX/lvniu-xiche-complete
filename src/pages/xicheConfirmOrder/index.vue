@@ -51,7 +51,7 @@
         <div class="flex-container infoslide white pad" @click="selectTimeStatus = true;">
           <div>预约服务时间</div>
           <div>
-            <span v-if="timeItem">{{timeItem}}</span>
+            <span v-if="datetip&&startTime">{{datetip}} {{startTime}} - {{dateEnd}} {{endTime}}</span>
             <img v-else src="/static/images/back.png" class="right">
           </div>
         </div>
@@ -63,9 +63,9 @@
           </div>
         </div>
         <div class="flex-container infoslide white pad" @click="choseItem(3)">
-          <div>优惠券{{CouponType}}</div>
+          <div>优惠券</div>
           <div>
-            <span v-if="couponPrice*1">{{couponPrice}}</span>
+            <span v-if="couponPrice">{{couponPrice}}</span>
             <img src="/static/images/back.png" class="right" v-else>
           </div>
           <!-- <div>
@@ -98,10 +98,10 @@
       <div class="fixed">
       <!-- 积分抵扣 -->
        <div class="integral">
-        <checkbox-group @change="checkboxChange">
-          <label class="checkbox flex-container">
-              可用1254积分抵扣125.00元
-            <checkbox :value="name" :checked="checked" color="#ff6325"/>
+        <checkbox-group >
+          <label class="checkbox flex-container" @click="scoreStatus = !scoreStatus">
+              可用{{score}}积分抵扣{{score/100}}元
+            <checkbox value="1" :checked="scoreStatus"  color="#ff6325"/>
           </label>
         </checkbox-group>
        </div>
@@ -206,6 +206,8 @@ export default {
   },
   data() {
     return {
+      latitude:'',
+      longitude:'',
       showPay: false,
       couponList: [], //子组件展示信息
       CardTicketData: [], //卡券列表
@@ -217,7 +219,7 @@ export default {
       CouponId: "", //优惠券id
       CouponType: "", //优惠券id
       CardTicketId: "0", //服务卡券id
-      couponPrice: "0.00",
+      couponPrice: "",
       CardTicketPrice: "0.00",
       CardTicketName: "",
       Token: "",
@@ -247,9 +249,13 @@ export default {
       minutes: [],
       shopTime: "", //商铺的营业时间
       datetip: "", //选中的日期
+      dateEnd:'',
       time: [0,0], //时间
       nowhour: "", //当前的时间
       addImgUrl, //上传图片按钮图片,
+      picListPath:[], //上传图片的数组
+      startTime:'',
+      endTime:'',
       timeItem:'',
       xicheProductArr: [],
       isXiche: false,
@@ -260,13 +266,19 @@ export default {
         phone: "",
         address: ""
       },
-
+      textInfo:'',//留言
+      score:'',//积分数
+      scoreStatus:false, // 是否积分抵扣
     };
   },
   onLoad() {
     this.setBarTitle();
+    this.initData();
+    this.choosedate()
     //首次获取默认车辆的信息
     const query = this.$root.$mp.query;
+    this.latitude = this.$store.state.latitude;
+    this.longitude = this.$store.state.longitude;
     // 页面传参店铺id
     if (query.shopId) {
       this.shopId = query.shopId;
@@ -281,8 +293,6 @@ export default {
     }
   },
   onShow() {
-    this.initData();
-    this.choosedate()
     this.Token = wx.getStorageSync("token");
     this.UserId = wx.getStorageSync("userId");
     // 洗车下单
@@ -292,70 +302,58 @@ export default {
       
       // 存在选择的项目,不存在项目返回上一页
       if (serItem && serItem.length > 0) {
+        let proId =[];
+        serItem.map(item=>{
+          proId.push(item.Id)
+        })
+        this.proid =proId.join(',')
+      console.log( this.proid, "选中的洗车项目ID");
         this.xicheProductArr = serItem;
         // 获取订单信息
         this.getXicheOrder();
       } else {
         // wx.navigateBack()
         wx.showToast({
-          title: "请选择服务项目!"
+          title: "请选择服务项目!",
+          icon:'none'
         });
         return false;
       }
 
     this.getAddress();// 获取收货地址 
     this.showPay = false;
-    //获取vuex商品信息
-    this.proid = this.$store.state.visitconfirmorder.ProductId;
-    // this.lat = wx.getStorageSync("latitude");
-    // this.lng = wx.getStorageSync("longitude");
-    // this.Password = wx.getStorageSync("password");
     const carInfo = wx.getStorageSync("CarInfo");
     console.log(carInfo, "carInfo");
     // 车辆信息
     if (carInfo) {
       this.CarInfoId = carInfo.Id;
-      this.CarInfo = carInfo.CarBrand +'-'+ carInfo.CarType +'-'+ carInfo.CarColor;
+      this.CarInfo = carInfo.CarBrand +' '+ carInfo.CarType +' '+ carInfo.CarColor+' '+carInfo.CarMumber;
 
-      // this.getTotal(); //获取订单总金额
     } else {
-      // this.CarInfoId=wx.getStorageSync("carId")
       this.getDefaultCar();
     }
-    console.log(this.proid, this.Token, this.UserId, this.CarInfoId);
-    //this.changeTime()
-    // if(this.CarInfoId){
-    //   this.getTotal()//获取订单总金额
-    // }
   },
   watch: {
     CardTicketId() {
-      // if(this.CardTicketId!=='0'){
-      // this.getTotal(); //获取订单总金额
-      // }
+      this.getTotal(); //获取订单总金额
+    },
+    // 是否积分抵扣
+    scoreStatus(){
+      this.getTotal(); //获取订单总金额
     },
     CouponId() {
-      let price = this.couponPrice;
-      if (this.CouponType == 1) {
-        price = "-" + price;
-      } else if (this.CouponType == 2) {
-        price = price + "折";
+      console.log(this.couponPrice, "this.couponPrice");
+      if(this.couponPrice){
+        let price = this.couponPrice;
+        if (this.CouponType == 1) {
+          price = "-" + price;
+        } else if (this.CouponType == 2) {
+          price = price + "折";
+        }
+        this.couponPrice = price;
       }
-      console.log(this.CouponType, "this.CouponType");
-      this.couponPrice = price;
-      this.getTotal(); //获取订单总金额
+        this.getTotal(); //获取订单总金额
     }
-  },
-  computed: {
-    //计算之后的总价格
-    // total() {
-    //   let totals = 0;
-    //   totals =
-    //     this.totalPrice -
-    //     this.couponPrice -
-    //     this.totalPrice * this.CardTicketPrice;
-    //   return totals.toFixed(2);
-    // }
   },
   methods: {
     setBarTitle() {
@@ -364,23 +362,23 @@ export default {
       });
     },
     initData() {
-      this.CardTicketId = "0"; //服务卡券id
+      this.CardTicketId = ""; //服务卡券id
       this.CardTicketName = "";
-      this.ShopData={}
+      // this.ShopData={}
       // this.CardTicketPrice = "0.00";
-      this.CouponId = "0"; //优惠券id
-      this.couponPrice = "0.00";
+      this.CouponId = ""; //优惠券id
+      this.couponPrice = "";
+      this.scoreStatus = false;//是否积分抵扣
+      console.log('初始化页面')
     },
     // 查询默认车辆
     async getDefaultCar() {
-      // console.log(this.CarInfoId,"默认车辆id")
       let res = await post("/User/GetCarInfo", {
         UserId: this.UserId,
         Token: this.Token,
         // CarId:this.CarInfoId
         IsDefault: 1
       });
-      console.log(res, "获取默认车辆");
       const _res = res.data[0];
       this.CarInfoId = _res.Id;
       this.CarInfo = _res.CarBrand + _res.CarType + _res.CarMumber;
@@ -388,24 +386,21 @@ export default {
     },
     // 获取洗车订单
     async getXicheOrder(){
-      let proId =[];
-      this.xicheProductArr.map(item=>{
-        proId.push(item.Id)
-      })
-      console.log(proId.join(','),'join')
+      this.initData()
       const result = await post("Order/DoorProductsFirmOrder", {
         UserId: this.UserId,
         Token: this.Token,
-        ProductList: proId.join(',')
+        ProductList: this.proid
       });
       if (result.code == 0) {
         this.orderinfo = result.data;
         this.ShopData = result.data.Data[0].ShopData[0];
         this.CouponData = result.data.CouponData;
         this.CardTicketData = result.data.CardTicketData;
-        // this.totalPrice = result.data.Price;
+        this.score = result.data.MemberScore;
         console.log(this.orderinfo.ShopData,this.ShopDadta, "确认页面详情");
       }
+      this.getTotal(); //获取订单总金额
     },
     choseItem(e) {
       if (e == 1) {
@@ -435,21 +430,21 @@ export default {
     },
     //获取订单总金额
     async getTotal() {
-      console.log(this.CardTicketId, "获取卡券信息");
-      wx.setStorageSync("CarInfo", "");
-      const result = await post("/Order/ServiceProductsPlaceOrderVerifyAmount", {
+      console.log(this.proid, "CarInfoId");
+      if(!this.CarInfoId){
+        return false;
+      }
+      const result = await post("Order/DoorProductsPlaceOrderVerifyAmount", {
         UserId: this.UserId,
         Token: this.Token,
-        ProductId: this.proid,
+        ProductList: this.proid,
         CarInfoId: this.CarInfoId,
-        CouponId: this.CouponId,
-        CardTicketId: this.CardTicketId,
-        Remarks: this.Remarks
+        CouponId: this.CouponId||0,
+        CardTicketId: this.CardTicketId||0,
+        ScoreId:this.scoreStatus?1:0,
       }).catch(() => {
         setTimeout(() => {
-          // 请求失败，情况服务卡券
-          this.CardTicketName = "";
-          this.CardTicketId = "";
+          this.initData()
         }, 1500);
       });
       console.log(result, "获取订单总金额");
@@ -457,8 +452,8 @@ export default {
         this.totalPrice = result.data.allPayMoney;
       }
     },
-    async goPay() {
       //提交支付
+    async goPay() {
       console.log(
         this.UserId,
         this.proid,
@@ -468,15 +463,24 @@ export default {
         "提交信息"
       );
       if (this.CarInfoId) {
+        const imgArr = await this.upDateImg()
         this.isshow = false;
-        const result = await post("/Order/ServiceProductsPlaceOrder", {
+        const result = await post("Order/SubmitDoorOrders", {
           UserId: this.UserId,
           Token: this.Token,
-          ProductId: this.proid,
+          ServiceItem: this.proid,
           CarInfoId: this.CarInfoId,
-          CouponId: this.CouponId,
-          CardTicketId: this.CardTicketId,
-          Remarks: this.Remarks
+          CouponId: this.CouponId||0,
+          CardTicketId: this.CardTicketId||0,
+          Remarks: this.textInfo,
+          Addr:this.address.address,
+          ContactName:this.address.name,
+          Tel:this.address.phone,
+          LaT:this.latitude,
+          Lng:this.longitude,
+          PicList:JSON.stringify(imgArr),
+          AppointmentStartTime:this.AppointmentStartTime,
+          AppointmentEndTime:this.AppointmentEndTime
         });
         console.log(result, "发起支付请求");
         this.orderNumber = result.data;
@@ -547,10 +551,7 @@ export default {
       wx.navigateTo({ url: "/pages/sitemanage/main" });
     },
     // ********选择时间弹窗函数********************************************************
-    // 选择图片
-    upImgSuccess(e){
-      console.log(e,'图片')
-    },
+    
     changebg(index) {
       this.active = index;
       this.datetip = this.datelist[index];
@@ -618,7 +619,6 @@ export default {
       let datetip = this.datetip;
       let dateArr =[]
       dateArr = datetip.split('月')
-      console.log('dateArr',dateArr)
       dateArr[1] = dateArr[1].replace(/日/g,'')
       // datetip = datetip.replace(/月/g, "-");
       // datetip = datetip.replace(/日/g, " ");
@@ -633,12 +633,13 @@ export default {
         } else {
           ts = t;
         }
-        time.push(ts);
+      console.log('ts',ts)
+        time.push(ts||'00');
       });
       // 默认预约2小时
       let timeEnd = (time[0]*1)+2
       let dateEnd = dateArr[1]
-      console.log(datetip[datetip.length-2], "datetip[datetip.length-2]");
+      console.log(time,this.time, "datetip[datetip.length-2]");
       if(time[0]>21){
         dateEnd =(dateEnd*1)+1 
         }
@@ -659,10 +660,12 @@ export default {
       })
         .then(res => {
           // console.log(res, "校验时间");
+          this.selectTimeStatus = false;
           this.AppointmentStartTime = timeItem;
           this.AppointmentEndTime = timeItem2;
           this.startTime = time[0] + ":" + time[1];
-          this.endTime = time[2] + ":" + time[3];
+          this.endTime = timeEnd + ":" + time[1];
+          this.dateEnd = dateArr[0] +'月'+dateEnd+'日'
           this.orderInfoStatus = 0;
           // wx.setStorageSync("timearr",timeItem)
           // wx.setStorageSync("datearr",'')
@@ -678,7 +681,45 @@ export default {
           });
         });
       return false;
-    }
+    },
+    // *****************选择图片*****************************************************
+    upImgSuccess(base,arr){
+      console.log(arr,'图片')
+      this.picListPath = arr
+    },
+    // 根据临时路径返回base64码
+    upDateImg() {
+      return new Promise((resolved, rejected) => {
+        const imgBase = [];
+        if (this.picListPath.length < 1) {
+          resolved(imgBase);
+        }
+        for (let i = 0; i < this.picListPath.length; i += 1) {
+          wx.getFileSystemManager().readFile({
+            filePath: this.picListPath[i], //选择图片返回的相对路径
+            encoding: "base64", //编码格式
+            success: ress => {
+              //成功的回调
+              imgBase.push({
+                PicUrl: "data:image/png;base64," + ress.data.toString()
+              });
+              if (i === this.picListPath.length - 1) {
+                // console.log("imgBase", imgBase);
+                resolved(imgBase);
+              }
+            },
+            fail(err) {
+              // console.log("上传失败的图片", err);
+              wx.showToast({
+                title: "图片上传失败！",
+                icon: "none"
+              });
+              rejected();
+            }
+          });
+        }
+      });
+    },
   },
 
   created() {

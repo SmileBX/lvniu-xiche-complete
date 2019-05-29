@@ -51,7 +51,6 @@ export default {
       return
     },
     selectCoupon(e){
-      console.log(e.mp.detail.value)
       const id = e.mp.detail.value
       let cardprice = 0
       let type =''

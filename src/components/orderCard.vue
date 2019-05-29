@@ -14,7 +14,7 @@
           </label>
           <label class="flex-container couponItem">
             不使用服务卡券
-             <input type="radio" name="coupon"  :checked="CardTicketId==0" value="0">
+             <input type="radio" name="coupon"  :checked="CardTicketId==0" value="0" />
           </label>
         </radio-group>
       </div>
