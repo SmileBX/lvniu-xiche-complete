@@ -53,13 +53,13 @@
               <div class="flex-container around">
                 <p class="price">￥{{item.price}}</p>
                 <!-- <div v-show="item.isAttr"> -->
-                <!-- <div v-if="item.ServiceMode!=1"> -->
-                <div>
+                <div v-if="item.ServiceMode!=1">
+                <!-- <div> -->
                   <img src="/static/images/s1.png" @click="lessNumber(item)" class="tippic">
                   <text class="nums">{{item.num}}</text>
                   <img src="/static/images/addcart.png" @click="addNumber(item)" class="tippic">
                 </div>
-                <!-- <div class="pay" v-else @click="goVisitconfirmorder(item.brandId,item.id)">立即购买</div> -->
+                <div class="pay" v-else @click="goxicheConfirmOrder(item.brandId,item.shopId)">立即购买</div>
               </div>
             </div>
           </div>
@@ -219,6 +219,7 @@ export default {
                 img: datas.ProductImg,
                 sale: datas.SalesVolume,
                 shopName:datas.ShopName,
+                shopId:datas.shopId,
                 Distance:datas.Distance.toFixed(2),
                 ServiceMode:datas.ServiceMode, //是否上门产品
                 num: 0,
@@ -440,16 +441,14 @@ export default {
       //   wx.navigateTo({ url: "/pages/djdetail/main?id=" + id });
       // }
     },
-    // 跳转结算页
-    goVisitconfirmorder(type, id){
+    // 跳转洗车结算页
+    goxicheConfirmOrder(type, shopId){
             this.$store.commit('update',{
               latitude: this.latitude,
               longitude: this.longitude
             });
-      this.$store.commit("setVisitConfirmOrder",{
-          ProductId:id
-      })
-        wx.navigateTo({ url: "/pages/visitconfirmorder/main?proid=" + id });
+      wx.setStorageSync("serItem",[]);
+      wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${shopId}&type=洗车` });
     },
     toPAy() {
       wx.navigateTo({ url: "/pages/confirmorder/main" });

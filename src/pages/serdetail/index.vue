@@ -61,6 +61,7 @@
           <img src="/static/images/back.png" class="right">
         </div>
       </div>
+      <div class="hr"></div>
       <!--遮罩层-->
       <div class="mask-modal" v-if="showDiscount" @click="showDiscount= false"></div>
       <!--优惠券弹窗-->
@@ -257,10 +258,18 @@ export default {
       })
     },
     toPay(e){//跳转到确认订单页面
+      // 上门
+      if(this.detailinfo.ServiceMode==1){
+         wx.setStorageSync("serItem",[]);
+        wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${this.ShopData.ShopId}&type=洗车` });
+      }
+      // 到店
+      else{
       this.$store.commit("setVisitConfirmOrder",{
           ProductId:e
       })
       wx.navigateTo({ url: "/pages/visitconfirmorder/main" });
+      }
     },
     // 获取优惠券列表
     async getCoupon() {
@@ -268,7 +277,7 @@ export default {
         const params = {
           UserId: wx.getStorageSync("userId"),
           Token: wx.getStorageSync("token"),
-          ShopId:this.ShopData.shopId,
+          ShopId:this.ShopData.ShopId,
           page: 1
         };
         const res = await post("Coupon/CouponCenter", params);

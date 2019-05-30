@@ -42,7 +42,7 @@
           @regionchange="getCenterMap1"
           @end="getCenterMap"
           show-location
-          style="width:750rpx; height:99vh;"
+          style="width:750rpx; height:91vh;"
         ></map>
         <!-- 中心点 -->
         <!-- v-show="active==='上门'" -->

@@ -4,31 +4,16 @@
       <!--服务商家-->
       <div class="flex-container clomn ordershophead white">
         <div class="orderserve">服务商家</div>
-        <div class="flex-container ordermain" v-if="orderinfo.ShopData">
-          <img :src="orderinfo.ShopData.Logo" class="ordershopimg">
+        <div class="flex-container" v-if="ShopData">
+          <img :src="ShopData.Logo" class="ordershopimg">
           <div class="flex-container clomn orderplace">
-            <p class="placename">{{orderinfo.ShopData.ShopNick}}</p>
-            <p>{{orderinfo.ShopData.Address}}</p>
+            <p class="placename">{{ShopData.ShopNick}}</p>
+            <p>{{ShopData.Address}}</p>
           </div>
         </div>
         <div class="ordertips" >(温馨提示：请直接至门店进行洗车服务)</div>
       </div>
       <div class="slide"></div>
-      <!-- 服务地址 -->
-      <div class="flex-container clomn orderhead white" @click="goSelectAddress">
-        <div class="orderserve">联系地址</div>
-        <div class="orderuser">
-          <p>联系人：{{address.name}}</p>
-          <p>{{address.phone}}</p>
-        </div>
-        <div class="flex-container addressContent">
-          <img src="/static/images/place.png" class="place">
-          <text class="placeinfo">详细地址：{{address.address}}</text>
-          <img src="/static/images/back.png" class="right">
-        </div>
-        <div class="ordertips">(温馨提示：请核对服务地址是否正确)</div>
-        <div class="slide"></div>
-      </div>
       <!--订单详情-->
       <div class="white proinfo">
         <div class="orderserve">服务项目</div>
@@ -43,7 +28,8 @@
         <div class="flex-container infoslide white pad" @click="selectTimeStatus = true;">
           <div>预约服务时间</div>
           <div>
-            <img src="/static/images/back.png" class="right">
+             <span v-if="datetip&&startTime">{{datetip}} {{startTime}} - {{dateEnd}} {{endTime}}</span>
+           <img v-else src="/static/images/back.png" class="right">
           </div>
         </div>
         <div class="flex-container infoslide white pad" @click="choseItem(1)">
@@ -56,12 +42,9 @@
         <div class="flex-container infoslide white pad" @click="choseItem(3)">
           <div>优惠券{{CouponType}}</div>
           <div>
-            <span v-if="couponPrice*1">{{couponPrice}}</span>
+            <span v-if="couponPrice">{{couponPrice}}</span>
             <img src="/static/images/back.png" class="right" v-else>
           </div>
-          <!-- <div>
-                  <img src="/static/images/back.png" class="right">
-          </div>-->
         </div>
         <div class="flex-container infoslide white pad" @click="choseItem(5)">
           <div>服务卡券</div>
@@ -70,25 +53,28 @@
             <img src="/static/images/back.png" class="right" v-else>
           </div>
         </div>
+        <div class="infoslide inputbor flex-container white pad">
+          <div>联系人</div>
+          <input type="text" placeholder="填写内容已和卖家协商确认" class="inputmes" v-model="address.name">
+        </div>
+        <div class="infoslide inputbor flex-container white pad">
+          <div>联系电话</div>
+          <input type="text" placeholder="填写内容已和卖家协商确认" class="inputmes" v-model="address.phone">
+        </div>
 
 
         <div class="infoslide inputbor flex-container white pad">
           <div>买家留言</div>
           <input type="text" placeholder="填写内容已和卖家协商确认" class="inputmes" v-model="Remarks">
         </div>
-
-        <!-- <div class="infoslide slideprice white pad">
-          合计：
-          <span>￥{{totalPrice}}</span>
-        </div> -->
       </div>
       <div class="fixed">
       <!-- 积分抵扣 -->
        <div class="integral">
-        <checkbox-group @change="checkboxChange">
-          <label class="checkbox flex-container">
-              可用1254积分抵扣125.00元
-            <checkbox :value="name" :checked="checked" color="#ff6325"/>
+        <checkbox-group>
+          <label class="checkbox flex-container" @click="scoreStatus = !scoreStatus">
+              可用{{score}}积分抵扣{{score/100}}元
+            <checkbox value="1" :checked="scoreStatus" color="#ff6325"/>
           </label>
         </checkbox-group>
        </div>
@@ -116,12 +102,6 @@
               @click="changebg(index)"
             >{{item}}</div>
           </div>
-          <!--开始时间 结束时间-->
-          <!-- <div class="tagflex"> -->
-          <!-- <div>开始时间</div> -->
-          <!-- <div>结束时间</div> -->
-          <!-- </div> -->
-          <!--滑动选择时间-->
           <div class="freeRoom">
             <div>
               <!--<div class="timeText">{{year}}年{{month}}月{{day}}日</div>-->
@@ -132,12 +112,6 @@
                 <picker-view-column class="pickerColumn">
                   <div class="pickerItem" v-for="(item,key) in minutes" :key="key">{{item}}分</div>
                 </picker-view-column>
-                <!-- <picker-view-column class="pickerColumn">
-                <div class="pickerItem" v-for="(item,key) in hourses" :key="key">{{item}}点</div>
-              </picker-view-column>
-              <picker-view-column class="pickerColumn">
-                <div class="pickerItem" v-for="(item,key) in minutes" :key="key">{{item}}分</div>
-                </picker-view-column>-->
               </picker-view>
             </div>
           </div>
@@ -201,6 +175,7 @@ export default {
       proid: "", //产品id
       CarInfoId: "", //车辆id
       CarInfo: "",
+      ShopData:{},//商户详情
       CouponId: "0", //优惠券id
       CouponType: "", //优惠券id
       CardTicketId: "0", //服务卡券id
@@ -230,12 +205,18 @@ export default {
       active: 0,
       hourses: [],
       minutes: [],
+          AppointmentStartTime:'',
+          AppointmentEndTime:'',
       shopTime: "", //商铺的营业时间
       totalPrice: "", //总价格
       shopTime: "", //商铺的营业时间
       datetip: "", //选中的日期
+      dateEnd:'',
       time: [0,0], //时间
       nowhour: "", //当前的时间
+      startTime:'',
+      endTime:'',
+      timeItem:'',
       // 地址
       address: {
         id: "",
@@ -243,11 +224,16 @@ export default {
         phone: "",
         address: ""
       },
+      score:'',//积分数
+      scoreStatus:false, // 是否积分抵扣
 
     };
   },
   onLoad() {
     this.setBarTitle();
+    this.initData();
+    // 初始化选择时间
+    this.choosedate()
     //首次获取默认车辆的信息
     const query = this.$root.$mp.query;
     // 页面传参店铺id
@@ -256,8 +242,6 @@ export default {
     }
   },
   onShow() {
-    this.initData();
-    this.choosedate()
     this.Token = wx.getStorageSync("token");
     this.UserId = wx.getStorageSync("userId");
 
@@ -275,7 +259,7 @@ export default {
     // 车辆信息
     if (carInfo) {
       this.CarInfoId = carInfo.Id;
-      this.CarInfo = carInfo.CarBrand + carInfo.CarType + carInfo.CarColor;
+      this.CarInfo = carInfo.CarBrand +' '+ carInfo.CarType +' '+ carInfo.CarColor+' '+carInfo.CarMumber;
 
       this.getTotal(); //获取订单总金额
     } else {
@@ -294,7 +278,12 @@ export default {
       this.getTotal(); //获取订单总金额
       // }
     },
+    // 是否积分抵扣
+    scoreStatus(){
+      this.getTotal(); //获取订单总金额
+    },
     CouponId() {
+      if(this.couponPrice){
       let price = this.couponPrice;
       if (this.CouponType == 1) {
         price = "-" + price;
@@ -303,19 +292,9 @@ export default {
       }
       console.log(this.CouponType, "this.CouponType");
       this.couponPrice = price;
+      }
       this.getTotal(); //获取订单总金额
     }
-  },
-  computed: {
-    //计算之后的总价格
-    // total() {
-    //   let totals = 0;
-    //   totals =
-    //     this.totalPrice -
-    //     this.couponPrice -
-    //     this.totalPrice * this.CardTicketPrice;
-    //   return totals.toFixed(2);
-    // }
   },
   methods: {
     setBarTitle() {
@@ -324,11 +303,12 @@ export default {
       });
     },
     initData() {
-      this.CardTicketId = "0"; //服务卡券id
+      this.CardTicketId = ""; //服务卡券id
       this.CardTicketName = "";
       // this.CardTicketPrice = "0.00";
-      this.CouponId = "0"; //优惠券id
-      this.couponPrice = "0.00";
+      this.CouponId = ""; //优惠券id
+      this.couponPrice = "";
+      this.scoreStatus = false;//是否积分抵扣
     },
     // 查询默认车辆
     async getDefaultCar() {
@@ -342,7 +322,7 @@ export default {
       console.log(res, "获取默认车辆");
       const _res = res.data[0];
       this.CarInfoId = _res.Id;
-      this.CarInfo = _res.CarBrand + _res.CarType + _res.CarMumber;
+      this.CarInfo = _res.CarBrand +' '+ _res.CarType +' '+ _res.CarColor+' '+_res.CarMumber;
       this.getTotal(); //获取订单总金额
     },
     //获取到店订单信息
@@ -354,10 +334,12 @@ export default {
       });
       if (result.code == 0) {
         this.orderinfo = result.data[0];
-        this.orderinfo.ShopData = result.data[0].ShopData[0];
+        this.ShopData = result.data[0].ShopData[0];
+
         this.CouponData = result.data[0].CouponData;
         this.CardTicketData = result.data[0].CardTicketData;
         this.totalPrice = result.data[0].Price;
+        this.score = result.data[0].Score;
         console.log(this.orderinfo.ShopData, "确认页面详情");
       }
     },
@@ -390,7 +372,9 @@ export default {
     //获取订单总金额
     async getTotal() {
       console.log(this.CardTicketId, "获取卡券信息");
-      wx.setStorageSync("CarInfo", "");
+      if(!this.CarInfoId){
+        return false;
+      }
       const result = await post("/Order/ServiceProductsPlaceOrderVerifyAmount", {
         UserId: this.UserId,
         Token: this.Token,
@@ -398,12 +382,11 @@ export default {
         CarInfoId: this.CarInfoId,
         CouponId: this.CouponId,
         CardTicketId: this.CardTicketId,
-        Remarks: this.Remarks
+        Remarks: this.Remarks,
+        ScoreId:this.scoreStatus?1:0
       }).catch(() => {
         setTimeout(() => {
-          // 请求失败，情况服务卡券
-          this.CardTicketName = "";
-          this.CardTicketId = "";
+          this.initData()
         }, 1500);
       });
       console.log(result, "获取订单总金额");
@@ -430,7 +413,12 @@ export default {
           CarInfoId: this.CarInfoId,
           CouponId: this.CouponId,
           CardTicketId: this.CardTicketId,
-          Remarks: this.Remarks
+          Remarks: this.Remarks,
+          ContactName:this.address.name,
+          Tel: this.address.phone,
+          AppointmentStartTime:this.AppointmentStartTime,
+          AppointmentEndTime:this.AppointmentEndTime,
+          ScoreId:this.scoreStatus?1:0
         });
         console.log(result, "发起支付请求");
         this.orderNumber = result.data;
@@ -501,14 +489,11 @@ export default {
       wx.navigateTo({ url: "/pages/sitemanage/main" });
     },
     // ********选择时间弹窗函数********************************************************
-    // 选择图片
-    upImgSuccess(e){
-      console.log(e,'图片')
-    },
     changebg(index) {
       this.active = index;
       this.datetip = this.datelist[index];
     },
+    // 初始化选择时间
     choosedate() {
       this.datelist = [];
       const ddd = new Date();
@@ -551,9 +536,10 @@ export default {
     },
     // 更改时间
     bindDateChangeStart(e) {
-      console.log(e.mp.detail,'e.mp.detail')
       // valIndex 是获取到的年月日在各自集合中的下标
       this.time = e.mp.detail.value;
+      // this.time[1] = this.minutes[e.mp.detail.value[1]]
+      // console.log(this.time,'e.mp.detail')
       // console.log(JSON.stringify(e.mp.detail.value))
       // let hourses = this.hourses[valIndex[0]]
       // let minutes = this.minutes[valIndex[1]]
@@ -564,40 +550,60 @@ export default {
       console.log(this.datetip, "日期");
       console.log(this.time, "时间");
       // 未修复营业时间
-      const timeStart = this.shopTime.split(" - ")[0].split(":")[0];
-      const timeEnd = this.shopTime.split("-")[1].split(":")[0];
+      // const timeStart = this.shopTime.split(" - ")[0].split(":")[0];
+      // const timeEnd = this.shopTime.split("-")[1].split(":")[0];
       // console.log(timeStart, timeEnd, this.time, "营业时间");
       // console.log(this.datelist, this.datetip.replace(/月/g, "-"), "日期");
       let datetip = this.datetip;
-      datetip = datetip.replace(/月/g, "-");
-      datetip = datetip.replace(/日/g, " ");
-      // console.log(this.time, "月份");
+      let dateArr =[]
+      dateArr = datetip.split('月')
+      dateArr[1] = dateArr[1].replace(/日/g,'')
+      // datetip = datetip.replace(/月/g, "-");
+      // datetip = datetip.replace(/日/g, " ");
       const year = new Date().getFullYear();
       let time = [];
-      this.time.map(t => {
+      let timeArr = this.time
+      timeArr[1] = this.minutes[this.time[1]]
+      timeArr.map(t => {
         let ts = "";
         if (String(t).length === 1) {
           ts = "0" + t;
         } else {
           ts = t;
         }
-        time.push(ts);
+      console.log('ts',ts)
+        time.push(ts||'00');
       });
-      const timeItem = year + "-" + datetip + time[0] + ":" + time[1] + ":00";
-      const timeItem2 = year + "-" + datetip + time[2] + ":" + time[3] + ":00";
-      // console.log("time", timeItem, timeItem2);
+      // 默认预约2小时
+      let timeEnd = (time[0]*1)+2
+      let dateEnd = dateArr[1]
+      console.log(time,this.time, "datetip[datetip.length-2]");
+      if(time[0]>21){
+        dateEnd =(dateEnd*1)+1 
+        }
+        if(timeEnd===24){
+          timeEnd ='00'
+        }else if(timeEnd===25){
+          timeEnd ='01'
+        }
+      const timeItem = year + "-" + dateArr[0] +'-'+dateArr[1]+' ' + time[0] + ":" + time[1] + ":00";
+      this.timeItem = timeItem;
+      const timeItem2 = year + "-" + dateArr[0] +'-'+dateEnd+' ' + timeEnd + ":" + time[1] + ":00";
+      console.log("time", timeItem, timeItem2);
       post("Order/CheckMakeTime", {
-        WorkWeek: this.shopInfo.WorkWeek,
-        WorkTime: this.shopInfo.WorkTime,
+        WorkWeek: this.ShopData.WorkWeek,
+        WorkTime: this.ShopData.WorkTime,
         AppointmentStartTime: timeItem,
         AppointmentEndTime: timeItem2
       })
         .then(res => {
           // console.log(res, "校验时间");
+          this.selectTimeStatus = false;
           this.AppointmentStartTime = timeItem;
           this.AppointmentEndTime = timeItem2;
           this.startTime = time[0] + ":" + time[1];
-          this.endTime = time[2] + ":" + time[3];
+          this.endTime = timeEnd + ":" + time[1];
+          this.dateEnd = dateArr[0] +'月'+dateEnd+'日'
           this.orderInfoStatus = 0;
           // wx.setStorageSync("timearr",timeItem)
           // wx.setStorageSync("datearr",'')
@@ -613,7 +619,7 @@ export default {
           });
         });
       return false;
-    }
+    },
   },
 
   created() {

@@ -44,7 +44,7 @@
                   </p>
                 </div>
               </div>
-              <div class="pay" @click="choseItem(item.Id)">立即购买</div>
+              <div class="pay" @click="choseItem(item.Id,item.ServiceMode)">立即购买</div>
             </div>
           </div>
         </scroll-view>
@@ -70,7 +70,7 @@
                 <text>特惠价:￥</text>
                 <text>{{item.Price}}</text>
               </p>
-              <p class="mealpay" @click="choseItem(item.Id)">立即购买</p>
+              <p class="mealpay" @click="choseItem(item.Id,item.ServiceMode)">立即购买</p>
             </div>
           </div>
         </div>
@@ -197,19 +197,7 @@ export default {
     await this.getMyPosition()
     // this.lat = this.$store.state.latitude;
     // this.lng = this.$store.state.longitude;
-    this.servincelist = [];
-    this.meallist = [];
-    this.commonlist = [];
-    this.detailinfo = [];
-    this.activecolor='';
-    this.sershow = true;
-    this.dishshow = false;
-    this.pointshow = false;
-    this.isOved = false;
-    this.isServiceOved = false;
-    this.Page = 1;
-    this.typeid = 0;
-    this.active = "服务";
+    this.initData();
     this.setBarTitle();
     this.getShopDetail();
     console.log(this.typeid, "page服务类型id");
@@ -231,7 +219,21 @@ export default {
         title
       });
     },
-    
+    initData(){
+    this.servincelist = [];
+    this.meallist = [];
+    this.commonlist = [];
+    this.detailinfo = [];
+    this.activecolor='';
+    this.sershow = true;
+    this.dishshow = false;
+    this.pointshow = false;
+    this.isOved = false;
+    this.isServiceOved = false;
+    this.Page = 1;
+    this.typeid = 0;
+    this.active = "服务";
+    },
     // 获取定位
     getMyPosition() {
       return new Promise((resolved, rejected) => {
@@ -441,12 +443,20 @@ export default {
           this.shopLng
       }); //获取商户服务产品详情
     },
-    choseItem(e) {
-      //console.log(e)
+    choseItem(e,ServiceMode) {
+      //console.log(e)this.shopid
+      // 上门
+      if(ServiceMode==1){
+         wx.setStorageSync("serItem",[]);
+        wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${this.shopid}&type=洗车` });
+      }
+      // 到店
+      else{
       this.$store.commit("setVisitConfirmOrder", {
         ProductId: e
       });
       wx.navigateTo({ url: "/pages/visitconfirmorder/main" });
+      }
     },
     // 重新设置坐标
     setMapMask(){
@@ -465,6 +475,13 @@ export default {
 
   created() {
     // let app = getApp()
+  },
+  // 下拉刷新
+  onPullDownRefresh() {
+    console.log('update',this.shopid)
+    this.initData();
+    this.getShopDetail();
+    wx.stopPullDownRefresh();
   },
   onReachBottom() {
     if(!this.isOved){

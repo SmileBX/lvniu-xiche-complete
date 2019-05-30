@@ -306,9 +306,10 @@ export default {
         { id: 0, name: "全部" },
         { id: 1, name: "待付款" },
         // { id: 2, name: "待使用" },
-        { id: 2, name: "待服务" },
-        { id: 5, name: "待评价" },
-        { id: 3, name: "已取消" },
+        { id: 2, name: "接单中" },
+        { id: 3, name: "待服务" },
+        // { id: 5, name: "待评价" },
+        { id: 6, name: "已取消" },
         // { id: 2, name: "退款" }
       ],
       visitlist: [{ id: 1, name: "上门服务" }, { id: 2, name: "到店服务" }],
@@ -442,7 +443,13 @@ export default {
     shiftStatus(status) {
       this.status = status * 1;
       this.initData();
-      this.getOrderList();
+      if(this.orderBigType==1){
+        // 卡券
+       this.getOrderList();
+      }else{
+      // 预约订单
+        this.getReserveOrderList()
+      }
     },
     async getOrderList() {
       if(this.isOved||this.hasData){
@@ -508,7 +515,9 @@ export default {
         Token: this.token,
         page: this.page,
         pageSize: this.pageSize,
-        ServiceMode: this.serviceMode
+        // ServiceMode: this.serviceMode,
+        ServiceMode: 0,
+        Status:this.status
       });
       
       // 第一页没有数据

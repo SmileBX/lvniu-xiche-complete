@@ -249,7 +249,7 @@ export default {
       minutes: [],
       shopTime: "", //商铺的营业时间
       datetip: "", //选中的日期
-      dateEnd:'',
+      dateEnd:'', //选中的结束日期
       time: [0,0], //时间
       nowhour: "", //当前的时间
       addImgUrl, //上传图片按钮图片,
@@ -343,7 +343,6 @@ export default {
       this.getTotal(); //获取订单总金额
     },
     CouponId() {
-      console.log(this.couponPrice, "this.couponPrice");
       if(this.couponPrice){
         let price = this.couponPrice;
         if (this.CouponType == 1) {
@@ -370,19 +369,18 @@ export default {
       this.CouponId = ""; //优惠券id
       this.couponPrice = "";
       this.scoreStatus = false;//是否积分抵扣
-      console.log('初始化页面')
     },
     // 查询默认车辆
     async getDefaultCar() {
       let res = await post("/User/GetCarInfo", {
         UserId: this.UserId,
         Token: this.Token,
-        // CarId:this.CarInfoId
         IsDefault: 1
       });
       const _res = res.data[0];
       this.CarInfoId = _res.Id;
-      this.CarInfo = _res.CarBrand + _res.CarType + _res.CarMumber;
+      this.CarInfo = _res.CarBrand +' '+ _res.CarType +' '+ _res.CarColor+' '+_res.CarMumber;
+
       this.getTotal(); //获取订单总金额
     },
     // 获取洗车订单
@@ -431,7 +429,6 @@ export default {
     },
     //获取订单总金额
     async getTotal() {
-      console.log(this.proid, "CarInfoId");
       if(!this.CarInfoId){
         return false;
       }
@@ -558,6 +555,7 @@ export default {
       this.active = index;
       this.datetip = this.datelist[index];
     },
+    // 初始化选择时间
     choosedate() {
       this.datelist = [];
       const ddd = new Date();

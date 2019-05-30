@@ -126,10 +126,10 @@
       <div class="fixed">
       <!-- 积分抵扣 -->
        <div class="integral">
-        <checkbox-group @change="checkboxChange">
-          <label class="checkbox flex-container">
-              可用1254积分抵扣125.00元
-            <checkbox :value="name" :checked="checked" color="#ff6325"/>
+        <checkbox-group >
+          <label class="checkbox flex-container" @click="scoreStatus = !scoreStatus">
+              可用{{score}}积分抵扣{{score/100}}元
+            <checkbox :value="name" :checked="scoreStatus" color="#ff6325"/>
           </label>
         </checkbox-group>
        </div>
@@ -237,7 +237,9 @@ export default {
 
       ShopData: {},
       AllNumber: 0,
-      AllPrice: 0
+      AllPrice: 0,
+      score:0, //用户可用积分
+      scoreStatus:false,
     };
   },
 
@@ -342,6 +344,7 @@ export default {
       this.ShopData = data.ShopData;
       this.AllNumber = data.AllNumber;
       this.AllPrice = data.AllPrice;
+      this.score = 6;
       console.log("productList", this.productList);
 
       this.getAddress();
@@ -486,6 +489,7 @@ export default {
         CartIds: this.cartIds,
         ContactName: this.address.name,
         Tel: this.address.phone,
+        Score:this.scoreStatus?1:0,
         ServiceItem: {
           CarInfoId: this.carInfo.Id,
           CardTicketId: this.cardId || 0,
@@ -522,6 +526,7 @@ export default {
         CartIds: this.cartIds,
         ContactName: this.address.name,
         Tel: this.address.phone,
+        Score:this.scoreStatus?1:0,
         ServiceItem: {
           CarInfoId: this.carInfo.Id,
           CardTicketId: this.cardId || 0,
