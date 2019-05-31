@@ -2,8 +2,8 @@
   <div class="backgray">
     <div class="menuTypeBox">
       <div class="menuType">
-        <span class="item" :class="{'active':orderBigType===1}" @click="shiftOrderBigType(1)">卡券订单</span>
-        <span class="item" :class="{'active':orderBigType===2}" @click="shiftOrderBigType(2)">服务订单</span>
+        <span class="item markBox left" :class="{'active':orderBigType===1}" @click="shiftOrderBigType(1)">卡券订单<div class="mark" v-if="cardMark">{{cardMark}}</div></span>
+        <span class="item right markBox" :class="{'active':orderBigType===2}" @click="shiftOrderBigType(2)">服务订单<div class="mark" v-if="serviceMark">{{serviceMark}}</div></span>
       </div>
     </div>
     <div class="menuContent">
@@ -15,7 +15,8 @@
             :key="item.id"
             :class="{active:status==item.id}"
             @click="shiftStatus(item.id)"
-          >{{item.name}}</p>
+            class="markBox"
+          >{{item.name}}<span class=" mark markMin" v-if="item.markNum">{{item.markNum}}</span></p>
         </div>
         <scroll-view scroll-y class="shoplist" @scrolltolower="loadMoreOrder">
           <div>
@@ -115,7 +116,10 @@
             :key="item.id"
             :class="{active:status==item.id}"
             @click="shiftStatus(item.id)"
-          >{{item.name}}</p>
+            class="markBox"
+          >{{item.name}}
+          <span class=" mark markMin" v-if="item.markNum">{{item.markNum}}</span>
+          </p>
         </div>
 
         <scroll-view scroll-y class="shoplist" @scrolltolower="loadMoreOrder">
@@ -279,6 +283,9 @@ export default {
   },
   onShow() {
     this.init();
+    // 右上角待操作数量
+    this.rightInfo();
+
     console.log(this.orderBigType, this.status);
   },
   data() {
@@ -293,13 +300,15 @@ export default {
       isLoad: false,
       isOved: false,
       hasData: false,
-      orderBigType: 1, //1:商城订单；2：预约订单
+      orderBigType: 1, //1:卡券订单；2：预约订单
+      cardMark:0, //卡券订单待操作数量
+      serviceMark:0,//预约订单待操作数量
       serviceMode: 1,
       balanceRequestUrl: "", //余额支付接口
       menulist: [
         { id: 0, name: "全部" },
-        { id: 1, name: "待付款" },
-        { id: 2, name: "待发放" },
+        { id: 1, name: "待付款",markNum:10 },
+        // { id: 2, name: "待发放" },
         // { id: 3, name: "待评价" },
         { id: 4, name: "已完成" },
         { id: 3, name: "已取消" },
@@ -307,15 +316,15 @@ export default {
       ],
       menuStatuslist: [
         { id: 0, name: "全部" },
-        { id: 1, name: "待付款" },
+        { id: 1, name: "待付款",markNum:10 },
         // { id: 2, name: "待使用" },
-        { id: 2, name: "接单中" },
-        { id: 3, name: "待服务" },
+        { id: 2, name: "接单中",markNum:10 },
+        { id: 3, name: "待服务",markNum:10 },
         // { id: 5, name: "待评价" },
         { id: 6, name: "已取消" },
         // { id: 2, name: "退款" }
       ],
-      visitlist: [{ id: 1, name: "上门服务" }, { id: 2, name: "到店服务" }],
+      visitlist: [{ id: 1, name: "上门服务"}, { id: 2, name: "到店服务" }],
       orderList: [],
       bookList: [],
       // 取消订单
@@ -328,7 +337,8 @@ export default {
 
       showPay: false, //支付弹窗
       totalPrice: "", //需要支付的价格
-      carinfo: ""
+      carinfo: "",
+      rightInfos:{}, //右上角待操作数量
     };
   },
 
@@ -390,6 +400,20 @@ export default {
       console.log("status:" + this.status);
       console.log("serviceMode:" + this.serviceMode);
       console.log(this.orderNo, "订单列表");
+    },
+    // 右上角待操作数量
+    async rightInfo(){
+      const res = await post('Order/MakeOrderCount',{
+        UserId: this.userId,
+        Token: this.token,
+      })
+      const _res = res.data;
+      this.cardMark = _res.cardCount;
+      this.menulist[1].markNum = _res.cardCount
+      this.serviceMark = _res.makeSum;
+      this.menuStatuslist[1].markNum = _res.makeCount
+      this.menuStatuslist[2].markNum = _res.makedfhCount
+      this.menuStatuslist[3].markNum = _res.makeyfhCount
     },
     shiftOrderBigType(e) {
       this.initData();
