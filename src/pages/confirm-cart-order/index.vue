@@ -88,7 +88,7 @@
         <div class="flex-container infoslide white pad" @click="onGetCarInfo">
           <div>选择车辆</div>
           <div>
-            <span v-if="carInfo&&carInfo.CarMumber">{{carInfo.CarMumber}}</span>
+            <span v-if="carInfo.Id">{{carInfo.CarBrand}} {{carInfo.CarType}} {{carInfo.CarColor}} {{carInfo.CarMumber}}</span>
             <img src="/static/images/back.png" class="right">
           </div>
         </div>
@@ -282,6 +282,10 @@ export default {
       this.comfirmOrder();
       // }
     },
+    // 是否使用积分
+      scoreStatus(){
+        this.comfirmOrder()
+      },
     "carInfo.Id"() {
       if (this.carInfo.Id) {
         this.comfirmOrder();
@@ -344,7 +348,7 @@ export default {
       this.ShopData = data.ShopData;
       this.AllNumber = data.AllNumber;
       this.AllPrice = data.AllPrice;
-      this.score = 6;
+      this.score = data.MemberScore;
       console.log("productList", this.productList);
 
       this.getAddress();

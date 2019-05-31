@@ -92,7 +92,12 @@
             class="infobg"
             placeholder="可以把停车位置写的更详细，可以把想跟洗车员传达的信息都写在这里"
             v-model="textInfo"
+            @focus="textareaFocus"
+            @blur="textareaBlur"
+            :focus="textInfoStatus"
+            v-if="textInfoStatus"
           ></textarea>
+          <div v-else @click="textareaFocus" class="infobg p10" :class="{'c999':textInfo =='可以把停车位置写的更详细，可以把想跟洗车员传达的信息都写在这里'}">{{textInfo}}</div>
         </div>
       </div>
       <div class="fixed">
@@ -267,6 +272,7 @@ export default {
         address: ""
       },
       textInfo:'',//留言
+      textInfoStatus:false,
       score:'',//积分数
       scoreStatus:false, // 是否积分抵扣
     };
@@ -276,22 +282,22 @@ export default {
     this.initData();
     this.choosedate()
     //首次获取默认车辆的信息
-    const query = this.$root.$mp.query;
+    // const query = this.$root.$mp.query;
     this.latitude = this.$store.state.latitude;
     this.longitude = this.$store.state.longitude;
-    this.textInfo=''
+    this.textInfo='可以把停车位置写的更详细，可以把想跟洗车员传达的信息都写在这里'
     // 页面传参店铺id
-    if (query.shopId) {
-      this.shopId = query.shopId;
-    }
-    // 如果洗车的时候，跳转选择项目
-    if (query.type && query.type == "洗车") {
-      console.log(query.type, this.shopId, "query.type");
-      wx.navigateTo({
-        url: "/pages/servince/main?shopId=" + this.shopId
-      });
-      return false;
-    }
+    // if (query.shopId) {
+    //   this.shopId = query.shopId;
+    // }
+    // // 如果洗车的时候，跳转选择项目
+    // if (query.type && query.type == "洗车") {
+    //   console.log(query.type, this.shopId, "query.type");
+    //   wx.navigateTo({
+    //     url: "/pages/servince/main?shopId=" + this.shopId
+    //   });
+    //   return false;
+    // }
   },
   onShow() {
     this.Token = wx.getStorageSync("token");
@@ -313,11 +319,11 @@ export default {
         // 获取订单信息
         this.getXicheOrder();
       } else {
-        // wx.navigateBack()
         wx.showToast({
           title: "请选择服务项目!",
           icon:'none'
         });
+        // wx.navigateBack()
         return false;
       }
 
@@ -720,6 +726,22 @@ export default {
         }
       });
     },
+    // ****************textarea输入框*************************
+    // 聚焦
+    textareaFocus(){
+
+      if(this.textInfo =='可以把停车位置写的更详细，可以把想跟洗车员传达的信息都写在这里'){
+        this.textInfo =''
+      }
+      this.textInfoStatus = true;
+    },
+    // 失去焦点
+    textareaBlur(){
+      if(!this.textInfo){
+        this.textInfo ='可以把停车位置写的更详细，可以把想跟洗车员传达的信息都写在这里'
+      }
+      this.textInfoStatus = false;
+    }
   },
 
   created() {

@@ -10,7 +10,7 @@
                 <p>{{info.ContactName}}</p>
                 <p>{{info.TelephoneNumber}}</p>
             </div>
-            <div>{{info.Address}}</div>
+            <div>{{info.ServiceAddr}}</div>
         </div>
     </div>
     <div class="slide"></div>
@@ -221,6 +221,7 @@ export default {
       let _this = this;
       wx.showModal({
         content: "您确定要删除该订单么？",
+        confirmColor:'#ff6325',
         success(res) {
           if (res.confirm) {
             _this.DeleteOrders();
@@ -261,6 +262,7 @@ export default {
      const that = this;
       wx.showModal({
         title:'请确认进行退款撤销！',
+        confirmColor:'#ff6325',
         success(res){
           if(res.confirm){
               post('Order/CanelRefund',{

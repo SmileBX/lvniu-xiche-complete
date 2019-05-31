@@ -93,6 +93,9 @@ export default {
     this.servicelist = [];
     if (wx.getStorageSync("serItem").length > 0) {
       this.selectArr = wx.getStorageSync("serItem");
+      this.URLstatus = false;
+    }else{
+      this.URLstatus = true;
     }
     this.getMenulist();
   },
@@ -109,7 +112,8 @@ export default {
       selectArr: [], //要提交的数组
       active: "0",
       isSelectAll: false,
-      scrollItem: "" //滑动中的item
+      scrollItem: "", //滑动中的item
+      URLstatus:false, //判断刚进来的时候是否有数据，进行跳转或者后退
     };
   },
 
@@ -221,7 +225,13 @@ export default {
     submit() {
       if (this.selectArr.length > 0) {
         wx.setStorageSync("serItem", this.selectArr);
-        wx.navigateBack();
+        if(this.URLstatus){
+          wx.redirectTo({
+            url: '/pages/xicheConfirmOrder/main'
+          })
+        }else{
+          wx.navigateBack()
+        }
       } else {
         wx.showToast({
           title: "请选择要服务项目",

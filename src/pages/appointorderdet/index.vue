@@ -6,7 +6,8 @@
         </div>
         <!--切换显示-->
         <!--上门订单-->
-        <div v-if="serType==1">
+        <!-- <div v-if="serType==1"> -->
+        <div>
             <div class="flex-container orderhead white">
                 <img src="/static/images/place.png" class="place">
                 <div class="flex-container clomn personinfo">
@@ -23,7 +24,7 @@
             </div>
         </div>
         <!--到店订单-->
-        <div class="flex-container shoporder white" v-if="serType==2">
+        <!-- <div class="flex-container shoporder white" v-if="serType==2">
           <img src="/static/images/place.png" class="place">
           <div class="shopservince">
               <div class="shopservinitem">到店服务</div>
@@ -35,14 +36,15 @@
                   </div>
               </div>
           </div>
-        </div>
+        </div> -->
         
         <div class="flex-container prodetail" v-if="reasonList.length<=0">
             <img src="/static/images/car22.png" class="mycardet">
             <div class="flex-container clomn carright">
                 <p>
                    <span>{{info.CarBrand}}</span>
-                   <span v-if="info.CarType">-{{info.CarType}}</span>
+                   <span v-if="info.CarType">- {{info.CarType}}</span>
+                   <span v-if="info.CarColor">- {{info.CarColor}}</span>
                 </p>
                 <p class="carnums">{{info.CarMumber}}</p>
             </div>
@@ -99,7 +101,7 @@
             <p class="pitem" v-if="info.StatusId=='13' || info.StatusId=='3' ">成交时间：{{info.CompleteTime}}</p>
         </div>
     </div>
-    <p class="flex-container" style="padding-right:50rpx;justify-content:flex-end" @click="phoneCall">
+    <p class="flex-container" style="padding:20rpx 50rpx 20rpx 0;justify-content:flex-end" @click="phoneCall">
           <img src="/static/images/phonecall.png" class="tippics1">
           <span>拨打电话</span>
     </p>
@@ -120,15 +122,15 @@
             <p class="leftbtn" @click="showReasonMak">取消订单</p>
             <p class="rightbtn" @click="toPay">付款</p>
         </div>
-        <div class="orderbottom white" v-if="info.StatusId==16">
+        <!-- <div class="orderbottom white" v-if="info.StatusId==16">
             <p class="rightbtn" @click="closeRefund">撤销退款</p>
-        </div>
+        </div> -->
       <!--申请退款-->
-        <div class="orderbottom white" v-if="info.StatusId==1">
+        <!-- <div class="orderbottom white" v-if="info.StatusId==1">
             <p class="rightbtn" @click="goRefund">申请退款</p>
-        </div>
+        </div> -->
         <div class="orderbottom white" v-if="info.StatusId==2">
-            <p class="leftbtn" @click="goRefund">申请退款</p>
+            <!-- <p class="leftbtn" @click="goRefund">申请退款</p> -->
             <p class="rightbtn" @click="confirmService">已服务</p>
         </div>
         <div class="orderbottom white" v-if="info.StatusId==3">
@@ -332,6 +334,7 @@ export default {
       let _this = this;
       wx.showModal({
         content: "您确定要删除该订单么？",
+        confirmColor:'#ff6325',
         success(res) {
           console.log(res,"删除订单")
           if (res.confirm) {
@@ -420,6 +423,7 @@ export default {
       const that = this;
       wx.showModal({
         title: "请确认进行退款撤销！",
+        confirmColor:'#ff6325',
         success(res) {
           if (res.confirm) {
             post("Order/CanelRefund", {
@@ -443,6 +447,7 @@ export default {
       const that = this;
       wx.showModal({
         title: "请确认已完成服务！",
+        confirmColor:'#ff6325',
         success(res) {
           if (res.confirm) {
             post("Order/ConfirmService", {

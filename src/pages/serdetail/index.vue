@@ -261,7 +261,7 @@ export default {
       // 上门
       if(this.detailinfo.ServiceMode==1){
          wx.setStorageSync("serItem",[]);
-        wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${this.ShopData.ShopId}&type=洗车` });
+        wx.navigateTo({ url: `/pages/servince/main??shopId=${this.ShopData.ShopId}` });
       }
       // 到店
       else{

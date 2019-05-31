@@ -82,6 +82,7 @@ export default {
       }else{
         wx.showModal({
           content: "亲，您已掉线，是否重新登录",
+        confirmColor:'#ff6325',
           success(e) {
             if (e.confirm) {
               wx.redirectTo({

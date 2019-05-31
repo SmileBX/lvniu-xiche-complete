@@ -127,19 +127,22 @@
                 <p class="tips">{{item.StatusName}}</p>
               </div>
               <div class="seritem" @click="toOrderDetail(2,item.OrderNumber)">
+                <p>店铺：{{item.ShopName}}</p>
                 <p>项目：{{item.ProductName}}</p>
-                <p>地址：{{item.ServiceAddr}}</p>
+                <p v-if="item.ServiceAddr">地址：{{item.ServiceAddr}}</p>
                 <p>
                   车辆：
                   <span style="margin-right:10rpx;">
                     {{item.CarBrand}}
-                    <span v-if="item.CarType">-{{item.CarType}}</span>
+                    <span v-if="item.CarType">- {{item.CarType}}</span>
                   </span>
-                  <span style="margin-right:10rpx;" v-if="item.CarColor">{{item.CarColor}}</span>
-                  <span style="margin-right:10rpx;">{{item.CarMumber}}</span>
+                  <span style="margin-right:10rpx;" v-if="item.CarColor">- {{item.CarColor}}</span>
+                  <span style="margin-right:10rpx;" v-if="item.CarMumber">- {{item.CarMumber}}</span>
                 </p>
-                <p>时间：{{item.StartTime}}</p>
-                <p>手机号：{{item.TelephoneNumber}}</p>
+                <p>时间：{{item.AppointmentStartTime}} - {{item.AppointmentEndTime}}</p>
+                <p v-if="item.ContactName">联系人：{{item.ContactName}}</p>
+                <p v-if="item.TelephoneNumber">手机号：{{item.TelephoneNumber}}</p>
+                <p>订单价格：<span class="totalPrices">￥{{item.TotalPrice}}</span></p>
               </div>
             </div>
             <!--********************切换到店服务-->
@@ -505,7 +508,7 @@ export default {
         console.log(this.orderList, "订单列表");
       }
     },
-    // 商场订单列表
+    // 预约订单列表
     async getReserveOrderList() {
       if(this.isOved||this.hasData){
         return false;
@@ -516,7 +519,7 @@ export default {
         page: this.page,
         pageSize: this.pageSize,
         // ServiceMode: this.serviceMode,
-        ServiceMode: 0,
+        ServiceMode: 3,
         Status:this.status
       });
       
@@ -604,6 +607,7 @@ export default {
       const that = this;
       wx.showModal({
         title: "请确认已完成服务！",
+        confirmColor:'#ff6325',
         success(res) {
           if (res.confirm) {
             post("Order/ConfirmService", {
@@ -633,6 +637,7 @@ export default {
       const that = this;
       wx.showModal({
         title: "请确认进行退款撤销！",
+        confirmColor:'#ff6325',
         success(res) {
           if (res.confirm) {
             post("Order/CanelRefund", {
@@ -655,6 +660,7 @@ export default {
       let _this = this;
       wx.showModal({
         content: "您确定要删除该订单么？",
+        confirmColor:'#ff6325',
         success(res) {
           if (res.confirm) {
             _this.DeleteOrders(index, orderNo);

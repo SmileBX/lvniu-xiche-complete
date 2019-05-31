@@ -141,12 +141,12 @@ export default {
     // }
   },
   onLoad() {
-    this.setBarTitle();
-    this.initData();
   },
   onShow() {
       this.userId = wx.getStorageSync("userId")
         this.token = wx.getStorageSync("token")
+    this.setBarTitle();
+    this.initData();
   },
   methods: {
     setBarTitle() {
@@ -219,7 +219,7 @@ export default {
                 img: datas.ProductImg,
                 sale: datas.SalesVolume,
                 shopName:datas.ShopName,
-                shopId:datas.shopId,
+                shopId:datas.ShopId,
                 Distance:datas.Distance.toFixed(2),
                 ServiceMode:datas.ServiceMode, //是否上门产品
                 num: 0,
@@ -383,7 +383,6 @@ export default {
         this.productlist.map((_productlist,j)=>{
           _productlist.list.map((item,index)=>{
             res.data.map((datas,i)=>{
-              carPrice += datas.SalePrice * datas.Number;
               // item.num = 0;
               // this.productlist[j].list[index].num = 0;
             if (datas.ProductId === item.id) {
@@ -402,6 +401,10 @@ export default {
           })
         // }
           })
+          
+            res.data.map((datas)=>{
+              carPrice += datas.SalePrice * datas.Number;
+            })
       this.carPrice = carPrice.toFixed(2);
     },
     // change(e) {
@@ -448,7 +451,7 @@ export default {
               longitude: this.longitude
             });
       wx.setStorageSync("serItem",[]);
-      wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${shopId}&type=洗车` });
+      wx.navigateTo({ url: `/pages/servince/main?shopId=${shopId}` });
     },
     toPAy() {
       wx.navigateTo({ url: "/pages/confirmorder/main" });

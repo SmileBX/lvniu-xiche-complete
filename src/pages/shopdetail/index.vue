@@ -448,7 +448,7 @@ export default {
       // 上门
       if(ServiceMode==1){
          wx.setStorageSync("serItem",[]);
-        wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${this.shopid}&type=洗车` });
+        wx.navigateTo({ url: `/pages/servince/main?shopId=${this.shopid}` });
       }
       // 到店
       else{

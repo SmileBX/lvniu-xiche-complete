@@ -590,7 +590,7 @@ export default {
       //   visitconfirmorder:{ProductId:this.shopInfo.id}
       // })
       wx.setStorageSync("serItem",[]);
-      wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${this.shopInfo.id}&type=洗车` });
+      wx.navigateTo({ url: `/pages/servince/main?shopId=${this.shopInfo.id}`});
       // this.toShopdet(this.shopInfo.id,1)
       
     },

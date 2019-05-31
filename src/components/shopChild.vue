@@ -188,7 +188,8 @@ export default {
 }
 .locationwid{
   width:34rpx;
-  height:44rpx;
+  height:40rpx;
+  /* height:auto; */
   margin-right:20rpx;
   box-sizing: border-box;
 }

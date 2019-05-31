@@ -300,7 +300,7 @@
 .infobg{
   height:268rpx;
   width:690rpx;
-  line-height:35rpx;
+  line-height:33rpx;
   font-size:28rpx;
   background:#f4f7fc;
   color:#333;
@@ -308,7 +308,12 @@
   padding:20rpx;
   box-sizing: border-box
 }
-
+.c999{
+  color:#888;
+}
+.p10{
+  padding:30rpx;
+}
 // 服务地址
 .place{
   width:28rpx;
