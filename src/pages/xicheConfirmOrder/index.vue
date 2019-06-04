@@ -200,6 +200,7 @@ import Pay from "@/components/pay.vue";
 import upImg from "@/components/upImg.vue";
 import orderCard from "@/components/orderCard.vue";
 import addImgUrl from "../../../static/images/bg20.png";
+import QQMapWX from "@/utils/qqmap-wx-jssdk"; //腾讯地图，reverseGeocoder逆地址转码
 import "../../css/common.css";
 import "../../css/global.css";
 export default {
@@ -211,6 +212,7 @@ export default {
   },
   data() {
     return {
+      qqmapsdk: null, //实例化地图sdk
       latitude:'',
       longitude:'',
       showPay: false,
@@ -281,6 +283,10 @@ export default {
     this.setBarTitle();
     this.initData();
     this.choosedate()
+    // 实例化API核心类
+    this.qqmapsdk = new QQMapWX({
+      key: "3P2BZ-6G4WD-CEX43-PIV5G-3VDYH-N5BGH" // 必填
+    });
     //首次获取默认车辆的信息
     // const query = this.$root.$mp.query;
     this.latitude = this.$store.state.latitude;
@@ -531,6 +537,9 @@ export default {
           UserId: wx.getStorageSync("userId"),
           Token: wx.getStorageSync("token")
         });
+            console.log("地址转码开始2");
+        let address = await this.getCityinfo()
+        res.data.addressinfo = address;
       } else {
         // 选择地址获取选择的信息
         res = await post("Address/GetInfo", {
@@ -554,6 +563,29 @@ export default {
         status: true
       });
       wx.navigateTo({ url: "/pages/sitemanage/main" });
+    },
+    //根据经纬度获取城市名称nowPlace 反地理转码
+    getCityinfo() {
+            console.log("地址转码开始");
+      return new Promise((resolved, rejected) => {
+        const that = this;
+        this.qqmapsdk.reverseGeocoder({
+          location: {
+            latitude: this.latitude,
+            longitude: this.longitude
+          },
+          success(res) {
+            console.log("地址转码成功", res);
+            const _res = res.result;
+            let address = _res.formatted_addresses.recommend + " - " + _res.address
+            resolved(address)
+          },
+          fail: function(err) {
+            console.log(res);
+            rejected(err)
+          }
+        });
+      });
     },
     // ********选择时间弹窗函数********************************************************
     
