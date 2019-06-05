@@ -260,8 +260,19 @@ export default {
     toPay(e){//跳转到确认订单页面
       // 上门
       if(this.detailinfo.ServiceMode==1){
-         wx.setStorageSync("serItem",[]);
-        wx.navigateTo({ url: `/pages/servince/main??shopId=${this.ShopData.ShopId}` });
+        const detail = this.detailinfo;
+        const params =[{
+          Id:detail.Id,
+          MarketPrice:detail.MarketPrice,
+          Name:detail.Name,
+          PicNo:detail.PicData[0].PicUrl,
+          Price:detail.Price,
+          SalesVolume:detail.ServiceMode,
+          Synopsis:detail.Synopsis,
+          VipPrice:detail.VipPrice
+        }]
+         wx.setStorageSync("serItem",params);
+        wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${this.ShopData.ShopId}` });
       }
       // 到店
       else{

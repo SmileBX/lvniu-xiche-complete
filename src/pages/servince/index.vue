@@ -44,7 +44,10 @@
                 >{{itemtip?itemtip:''}}</text>
               </p>
               <p class="sales">销量: {{item.SalesVolume}}</p>
+              <div class="priceBox flex-container">
               <p class="price">￥{{item.Price}}</p>
+              <p class="vip-price">vip￥{{item.VipPrice}}</p>
+              </div>
             </div>
           </div>
           <div>
@@ -89,6 +92,8 @@ export default {
     console.log(this.shopId);
   },
   onShow() {
+    this.token = wx.getStorageSync("token");
+    this.userId = wx.getStorageSync("userId");
     this.Page = 1;
     this.servicelist = [];
     if (wx.getStorageSync("serItem").length > 0) {
@@ -101,6 +106,8 @@ export default {
   },
   data() {
     return {
+      userId:'',
+      token:'',
       latitude: "",
       longitude: "",
       shopId: "",
@@ -156,7 +163,9 @@ export default {
           // Lat:"1.000000",
           // Lng:"2.000000"
           Lat: this.latitude,
-          Lng: this.longitude
+          Lng: this.longitude,
+          UserId :this.userId,
+          Token: this.token
         });
         if (res.code == 0) {
           arr.push({

@@ -37,7 +37,11 @@
           <img :src="productItem.PicNo" class="ordershopimg">
           <div class="flex-container clomn orderplace">
             <p class="placename detailright">{{productItem.Name}}</p>
-            <p>￥{{productItem.Price}}</p>
+            <!-- <p>￥{{productItem.Price}}</p> -->
+              <div class="priceBox flex-container">
+              <p class="prices">￥{{productItem.Price}}</p>
+              <p class="vip-price">vip￥{{productItem.VipPrice}}</p>
+              </div>
           </div>
         </div>
         <!-- 上门订单 -->
@@ -381,6 +385,8 @@ export default {
       this.CouponId = ""; //优惠券id
       this.couponPrice = "";
       this.scoreStatus = false;//是否积分抵扣
+      // this.datetip='';
+      this.startTime='';
     },
     // 查询默认车辆
     async getDefaultCar() {

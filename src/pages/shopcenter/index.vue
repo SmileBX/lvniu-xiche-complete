@@ -450,6 +450,7 @@ export default {
               latitude: this.latitude,
               longitude: this.longitude
             });
+            console.log(shopId,'shopid')
       wx.setStorageSync("serItem",[]);
       wx.navigateTo({ url: `/pages/servince/main?shopId=${shopId}` });
     },

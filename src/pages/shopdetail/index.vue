@@ -444,7 +444,7 @@ export default {
       }); //获取商户服务产品详情
     },
     choseItem(e,ServiceMode) {
-      //console.log(e)this.shopid
+      console.log(this.shopid)
       // 上门
       if(ServiceMode==1){
          wx.setStorageSync("serItem",[]);
