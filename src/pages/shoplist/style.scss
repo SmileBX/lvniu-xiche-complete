@@ -106,10 +106,11 @@
     padding:25rpx 40rpx;
     justify-content:flex-start;
     border-top:1rpx solid #eee;
-    
+    flex-flow:wrap row;
 }
 .itemposit div{
     text-align:center;
+    padding:10rpx;
 }
 .yellow{
     color:#ff6325;

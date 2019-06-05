@@ -68,9 +68,9 @@
     <div class="bigmask" v-if="isServe"></div>
     <div v-if="showserve" class="flex-container itemposit">
         <div @click="choseServe(99)" :class="{yellow:defaultactive}">全部服务</div>
-        <div class="flex-container">
-            <div v-for="(item,index) in serlist" :key="index" :class="{yellow:seractive==index}" @click="choseServe(index)" style="width:120rpx">{{item.TypeName}}</div>
-        </div>
+        <!-- <div class="flex-container"> -->
+            <div v-for="(item,index) in serlist" :key="index" :class="{yellow:seractive==index}" @click="choseServe(index)" style="">{{item.TypeName}}</div>
+        <!-- </div> -->
         
     </div>
     <!--距离-->
