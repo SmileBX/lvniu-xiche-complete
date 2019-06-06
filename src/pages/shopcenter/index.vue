@@ -59,7 +59,7 @@
                   <text class="nums">{{item.num}}</text>
                   <img src="/static/images/addcart.png" @click="addNumber(item)" class="tippic">
                 </div>
-                <div class="pay" v-else @click="goxicheConfirmOrder(item.brandId,item.shopId)">立即购买</div>
+                <div class="pay" v-else @click="goxicheConfirmOrder(item.brandId,item)">立即购买</div>
               </div>
             </div>
           </div>
@@ -445,14 +445,15 @@ export default {
       // }
     },
     // 跳转洗车结算页
-    goxicheConfirmOrder(type, shopId){
+    goxicheConfirmOrder(type, item){
             this.$store.commit('update',{
               latitude: this.latitude,
               longitude: this.longitude
             });
-            console.log(shopId,'shopid')
-      wx.setStorageSync("serItem",[]);
-      wx.navigateTo({ url: `/pages/servince/main?shopId=${shopId}` });
+            console.log(item,'shopid')
+      wx.setStorageSync("serItem",[{
+          Id:item.id}]);
+      wx.navigateTo({ url: `/pages/xicheConfirmOrder/main?shopId=${item.shopId}` });
     },
     toPAy() {
       wx.navigateTo({ url: "/pages/confirmorder/main" });

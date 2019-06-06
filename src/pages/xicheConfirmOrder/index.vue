@@ -325,7 +325,6 @@ export default {
         })
         this.proid =proId.join(',')
       console.log( this.proid, "选中的洗车项目ID");
-        this.xicheProductArr = serItem;
         // 获取订单信息
         this.getXicheOrder();
       } else {
@@ -333,7 +332,9 @@ export default {
           title: "请选择服务项目!",
           icon:'none'
         });
-        // wx.navigateBack()
+        setTimeout(()=>{
+         wx.navigateBack()
+        },1500)
         return false;
       }
 
@@ -415,6 +416,7 @@ export default {
         this.CouponData = result.data.CouponData;
         this.CardTicketData = result.data.CardTicketData;
         this.score = result.data.MemberScore;
+        this.xicheProductArr = result.data.Data;
         console.log(this.orderinfo.ShopData,this.ShopDadta, "确认页面详情");
       }
       this.getTotal(); //获取订单总金额
