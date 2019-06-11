@@ -37,11 +37,11 @@
             </div> -->
             <div class="flex-container">
                 <p>订单价格</p>
-                <p>￥{{info.TotalPrice}}</p>
+                <p>￥{{startPrice}}</p>
             </div>
             <div class="flex-container">
                 <p>优惠</p>
-                <p>-¥0.00</p>
+                <p>¥ -{{offerPrice}}</p>
             </div>
         </div>
         <div class="flex-container padtop">
@@ -174,7 +174,9 @@ export default {
       orderNo:"",
       info:{},
       showPay:false,  //支付弹窗
-      totalPrice:""  //需要支付的价格
+      totalPrice:"",  //需要支付的价格
+      startPrice:0,
+      offerPrice:0
     }
   },
   methods: {
@@ -206,6 +208,12 @@ export default {
         this.info = result.data;
         // this.orderItemNum=result.data.OrderNumber
         // console.log(this.orderItemNum,"子单号")
+        let startPrice =0;
+        result.data.orderDetails.map(item=>{
+          startPrice+=item.UnitPrice*item.ProductCount
+        })
+        this.startPrice = startPrice.toFixed(2);
+        this.offerPrice = (startPrice - result.data.TotalPrice).toFixed(2)
         this.hasData = true;
       }
     },
