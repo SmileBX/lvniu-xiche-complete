@@ -35,15 +35,17 @@
       </div>
         <div class="suggest" v-show="searchValueStatus&&searchValue">
           <scroll-view scroll-y class="lists">
-            <cover-view class="item" v-for="(item,index) in searchValueList" :key="index" @click="onSearchItem(index)">
+            <cover-view class="bg-fff">
+             <cover-view class="item" v-for="(item,index) in searchValueList" :key="index" @click="onSearchItem(index)">
               <cover-view class="iteminfo">
                 <cover-view class="location-self">{{item.name}}</cover-view>
                 <cover-view class="sub">{{item.address}}</cover-view>
               </cover-view>
               <!-- <cover-image src="/static/images/choose2.png" class="choose" :class="{active:0==index}" /> -->
-            </cover-view>
+             </cover-view>
             <!-- 没有推荐地址提示 -->
               <cover-view class="notAddress" v-show="searchValueList.length<1">没有找到输入的地址哦！</cover-view>
+              </cover-view>
           </scroll-view>
         </div>
       </div>
@@ -289,4 +291,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "./style";
+.bg-fff{
+  background:#fff;
+}
 </style>
